@@ -60,9 +60,44 @@
         .results-table .total-cell { font-weight: 500; color: #5e5a52; font-size: 0.8rem; }
         .free-responses-section { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid #e3ded5; }
         .free-responses-section h4 { font-weight: 600; font-size: 1rem; color: #1e1e1e; margin-bottom: 0.8rem; }
-        .free-responses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.6rem; }
-        .free-response-item { background: white; padding: 0.6rem 0.9rem; border-radius: 12px; border: 1px solid #e8e4dc; font-size: 0.9rem; color: #2a2722; }
-        .free-response-item .meta { font-size: 0.75rem; color: #8b1e2b; font-weight: 500; display: block; margin-bottom: 0.2rem; }
+        .free-responses-list { list-style: none; padding: 0; margin: 0; }
+        .free-responses-list li { 
+            background: white; 
+            padding: 0.6rem 1rem; 
+            border-radius: 12px; 
+            border: 1px solid #e8e4dc; 
+            font-size: 0.9rem; 
+            color: #2a2722;
+            margin-bottom: 0.5rem;
+            position: relative;
+            padding-left: 2rem;
+        }
+        .free-responses-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0.7rem;
+            color: #8b1e2b;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .free-responses-list .class-group-header {
+            font-weight: 600;
+            color: #1e1e1e;
+            margin-top: 0.8rem;
+            margin-bottom: 0.3rem;
+            font-size: 0.95rem;
+            padding-left: 0.5rem;
+            background: transparent;
+            border: none;
+            padding: 0.3rem 0.5rem;
+        }
+        .free-responses-list .class-group-header::before {
+            content: "";
+            display: none;
+        }
+        .free-responses-list .class-group-header:first-of-type {
+            margin-top: 0;
+        }
         .stanford-context { margin-top: 1.5rem; padding-top: 1.2rem; border-top: 2px solid #8b1e2b; font-size: 0.95rem; line-height: 1.6; color: #2a2722; }
         .stanford-context strong { color: #8b1e2b; }
         .stanford-context .highlight { background: #e8e2d7; padding: 0.1rem 0.4rem; border-radius: 12px; font-weight: 500; }
@@ -314,12 +349,35 @@
 
             html += '</tbody></table></div>';
 
+            // Free responses grouped by class - without redundant class tags
             if (data.freeResponses && data.freeResponses.length > 0) {
-                html += `<div class="free-responses-section"><h4>📝 Free Responses (Q4: What do you hope to gain from this course?)</h4><div class="free-responses-grid">`;
+                // Group responses by class
+                const groupedResponses = {};
                 data.freeResponses.forEach(item => {
-                    html += `<div class="free-response-item"><span class="meta">${item.class || 'Unspecified'}</span><span>${item.response}</span></div>`;
+                    const className = item.class || 'Unspecified';
+                    if (!groupedResponses[className]) {
+                        groupedResponses[className] = [];
+                    }
+                    groupedResponses[className].push(item.response);
                 });
-                html += '</div></div>';
+
+                html += `<div class="free-responses-section">`;
+                html += `<h4>📝 Free Responses (Q4: What do you hope to gain from this course?)</h4>`;
+                html += `<ul class="free-responses-list">`;
+                
+                // Get sorted class names
+                const sortedClassNames = Object.keys(groupedResponses).sort();
+                sortedClassNames.forEach(className => {
+                    const responses = groupedResponses[className];
+                    // Show class header
+                    html += `<li class="class-group-header">${className}</li>`;
+                    // Show each response for this class (no class tag)
+                    responses.forEach(response => {
+                        html += `<li>${response}</li>`;
+                    });
+                });
+                
+                html += `</ul></div>`;
             }
 
             html += `<div style="margin-top: 1rem; font-size: 0.9rem; color: #5e5a52;"><strong>Total Responses:</strong> ${data.totalResponses || 0}</div>`;
