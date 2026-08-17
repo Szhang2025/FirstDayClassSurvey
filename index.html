@@ -22,7 +22,7 @@
         }
 
         .survey-card {
-            max-width: 880px;
+            max-width: 1100px;
             width: 100%;
             background: white;
             border-radius: 40px;
@@ -31,7 +31,7 @@
             border: 1px solid #f0ede6;
         }
 
-        @media (max-width: 550px) {
+        @media (max-width: 768px) {
             .survey-card { padding: 1.8rem 1.2rem; }
         }
 
@@ -51,15 +51,6 @@
             letter-spacing: -0.02em;
             color: #1e1e1e;
             line-height: 1.2;
-        }
-
-        .header .sub {
-            color: #5e5a52;
-            font-size: 0.95rem;
-            background: #f0ede6;
-            padding: 0.3rem 1rem;
-            border-radius: 40px;
-            margin-top: 0.3rem;
         }
 
         .intro {
@@ -147,6 +138,29 @@
             color: #1f1d1a;
             cursor: pointer;
             padding: 2px 0;
+        }
+
+        /* Dropdown styling */
+        .dropdown-select {
+            width: 100%;
+            padding: 0.7rem 1.2rem;
+            border: 1px solid #d6d0c4;
+            border-radius: 40px;
+            background: white;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            transition: 0.15s;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235e5a52' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1.2rem center;
+        }
+
+        .dropdown-select:focus {
+            border-color: #8b1e2b;
+            box-shadow: 0 0 0 3px rgba(139, 30, 43, 0.15);
         }
 
         .text-input {
@@ -286,49 +300,14 @@
             gap: 8px;
         }
 
-        .result-item {
-            margin-bottom: 1.4rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px dashed #d9d2c5;
+        .badge-icon {
+            background: #8b1e2b10;
+            padding: 0.1rem 0.6rem;
+            border-radius: 30px;
+            color: #8b1e2b;
+            font-size: 0.75rem;
+            font-weight: 500;
         }
-
-        .result-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-
-        .result-item .rq {
-            font-weight: 600;
-            color: #2f2b24;
-            font-size: 0.98rem;
-            margin-bottom: 4px;
-        }
-
-        .result-item .rq small {
-            font-weight: 400;
-            color: #6b655b;
-            font-size: 0.8rem;
-            margin-left: 6px;
-        }
-
-        .result-stats {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.6rem 1.2rem;
-            padding: 0.3rem 0.2rem;
-        }
-
-        .stat-badge {
-            background: white;
-            border-radius: 40px;
-            padding: 0.2rem 0.9rem;
-            border: 1px solid #d6d0c4;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .stat-badge .label { color: #4a453d; }
-        .stat-badge .value { font-weight: 600; color: #1e1e1e; }
-        .stat-badge .count { color: #8b1e2b; font-weight: 500; }
 
         .result-empty {
             color: #6b655b;
@@ -346,13 +325,121 @@
             display: inline-block;
         }
 
-        .badge-icon {
-            background: #8b1e2b10;
-            padding: 0.1rem 0.6rem;
-            border-radius: 30px;
+        /* Table Styles */
+        .results-table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 2rem;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .results-table thead {
+            background: #8b1e2b;
+            color: white;
+        }
+
+        .results-table th {
+            padding: 0.7rem 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-right: 1px solid rgba(255,255,255,0.2);
+            min-width: 80px;
+        }
+
+        .results-table th:last-child {
+            border-right: none;
+        }
+
+        .results-table td {
+            padding: 0.5rem 0.4rem;
+            text-align: center;
+            border-bottom: 1px solid #e8e4dc;
+            vertical-align: middle;
+        }
+
+        .results-table tbody tr:hover {
+            background: #f5f3ee;
+        }
+
+        .results-table .class-cell {
+            font-weight: 600;
+            color: #1e1e1e;
+            background: #f5f3ee;
+            text-align: center;
+            padding: 0.5rem 0.6rem;
+            white-space: nowrap;
+        }
+
+        .results-table .question-cell {
+            padding: 0.3rem 0.2rem;
+        }
+
+        .results-table .option-badge {
+            display: inline-block;
+            background: #f0ede6;
+            padding: 0.1rem 0.4rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            color: #2a2722;
+            margin: 0.1rem 0.1rem;
+            white-space: nowrap;
+        }
+
+        .results-table .option-badge .pct {
             color: #8b1e2b;
-            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .results-table .total-cell {
             font-weight: 500;
+            color: #5e5a52;
+            font-size: 0.8rem;
+        }
+
+        /* Free Responses */
+        .free-responses-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e3ded5;
+        }
+
+        .free-responses-section h4 {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #1e1e1e;
+            margin-bottom: 0.8rem;
+        }
+
+        .free-responses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 0.6rem;
+        }
+
+        .free-response-item {
+            background: white;
+            padding: 0.6rem 0.9rem;
+            border-radius: 12px;
+            border: 1px solid #e8e4dc;
+            font-size: 0.9rem;
+            color: #2a2722;
+        }
+
+        .free-response-item .meta {
+            font-size: 0.75rem;
+            color: #8b1e2b;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 0.2rem;
         }
 
         .stanford-context {
@@ -374,6 +461,18 @@
             border-radius: 12px;
             font-weight: 500;
         }
+
+        .class-selector-wrapper {
+            margin-bottom: 0.2rem;
+        }
+
+        .class-selector-wrapper label {
+            font-weight: 500;
+            color: #2a2722;
+            font-size: 0.95rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
     </style>
 </head>
 <body>
@@ -388,6 +487,26 @@
     </div>
 
     <form id="surveyForm" onsubmit="return handleSubmit(event)">
+        <!-- Class Dropdown -->
+        <div class="question-block">
+            <div class="q-title"><span class="q-num">0</span> Your Course <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(select your class)</span></div>
+            <div class="class-selector-wrapper">
+                <select class="dropdown-select" id="classSelect" name="class" required>
+                    <option value="">— Select your course —</option>
+                    <option value="STAT 103">STAT 103</option>
+                    <option value="STAT 210">STAT 210</option>
+                    <option value="STAT 239">STAT 239</option>
+                    <option value="STAT 321">STAT 321</option>
+                    <option value="STAT 325">STAT 325</option>
+                    <option value="STAT 353">STAT 353</option>
+                    <option value="STAT 360">STAT 360</option>
+                    <option value="STAT 380">STAT 380</option>
+                    <option value="STAT 415">STAT 415</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+
         <!-- Q1 -->
         <div class="question-block">
             <div class="q-title"><span class="q-num">1</span> What do you value more in this course? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(single choice)</span></div>
@@ -449,6 +568,7 @@
     <!-- Results Panel -->
     <div id="resultsPanel" class="results-panel">
         <h3>Class Survey Results <span class="badge-icon">Live</span></h3>
+        
         <div id="resultsContent">
             <div class="result-empty">Click "View Survey Results" to load data.</div>
         </div>
@@ -486,6 +606,7 @@
         const resultsPanel = document.getElementById('resultsPanel');
         const resultsContent = document.getElementById('resultsContent');
         const stanfordContext = document.getElementById('stanfordContext');
+        const classSelect = document.getElementById('classSelect');
 
         // Timestamp
         const tsField = document.getElementById('timestampField');
@@ -516,9 +637,15 @@
         window.handleSubmit = function(event) {
             event.preventDefault();
 
+            const className = classSelect.value;
             const q1 = getRadioValue('q1_grade_skill');
             const q2 = getRadioValue('q2_ai_excite');
             const q3 = getRadioValue('q3_ai_trust');
+            
+            if (!className) {
+                showToast('Please select your course from the dropdown.', true);
+                return false;
+            }
             if (!q1 || !q2 || !q3) {
                 showToast('Please answer all single-choice questions (Q1, Q2, Q3).', true);
                 return false;
@@ -530,6 +657,7 @@
 
             const formData = {
                 timestamp: timestamp,
+                class: className,
                 q1_grade_skill: q1,
                 q2_ai_excite: q2,
                 q3_ai_trust: q3,
@@ -572,6 +700,7 @@
             try {
                 const response = await fetch(SCRIPT_URL, {
                     method: 'GET',
+                    mode: 'cors',
                     cache: 'no-cache',
                     headers: { 'Accept': 'application/json' }
                 });
@@ -589,95 +718,85 @@
                 console.error('Failed to fetch results:', err);
                 showToast('Unable to load results. Check Apps Script deployment.', true);
                 resultsPanel.classList.add('visible');
-                resultsContent.innerHTML = `<div class="result-empty">Load failed: ${err.message}. Check console or contact TA.</div>`;
+                resultsContent.innerHTML = `<div class="result-empty">Load failed: ${err.message}. Make sure the Web App is deployed with "Anyone" access and the URL is correct.</div>`;
             } finally {
                 showResultsBtn.disabled = false;
                 showResultsBtn.innerHTML = 'View Survey Results';
             }
         }
 
-        // Render Results
+        // Render Results as Table
         function renderResults(data) {
-            if (!data || typeof data !== 'object') {
-                resultsContent.innerHTML = `<div class="result-empty">No data available. Please submit surveys first.</div>`;
+            if (!data || data.error) {
+                resultsContent.innerHTML = `<div class="result-empty">${data?.error || 'No data available. Please submit surveys first.'}</div>`;
                 return;
             }
 
-            const qLabels = {
-                q1: '1. Grade vs. Knowledge/Skills',
-                q2: '2. Excitement about AI',
-                q3: '3. Trust in AI',
-                q4: '4. Course Expectations (keywords)',
-                q5: '5. Preferred Course Focus (multi-select)'
-            };
+            if (!data.tableData || data.tableData.length === 0) {
+                resultsContent.innerHTML = `<div class="result-empty">No survey responses yet. Submit a survey to see results.</div>`;
+                return;
+            }
 
             let html = '';
 
-            ['q1', 'q2', 'q3'].forEach(key => {
-                const qData = data[key];
-                if (!qData || typeof qData !== 'object' || Object.keys(qData).length === 0) {
-                    html += `<div class="result-item"><div class="rq">${qLabels[key]}</div><div class="result-empty">No data yet</div></div>`;
-                    return;
-                }
-                const sorted = Object.entries(qData).sort((a, b) => b[1] - a[1]);
-                const total = sorted.reduce((sum, [, count]) => sum + count, 0);
-                let statsHtml = '';
-                sorted.forEach(([label, count]) => {
-                    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-                    statsHtml += `<span class="stat-badge"><span class="label">${label}</span> <span class="count">${count}</span> <span style="color:#5a554b;font-size:0.8rem;">(${pct}%)</span></span>`;
-                });
-                html += `<div class="result-item">
-                            <div class="rq">${qLabels[key]} <small>Total: ${total} responses</small></div>
-                            <div class="result-stats">${statsHtml}</div>
-                        </div>`;
+            // Build the table
+            html += `<div class="results-table-wrapper"><table class="results-table">`;
+            
+            // Table header
+            html += `<thead><tr><th>Course</th>`;
+            data.questions.forEach(q => {
+                html += `<th>${q.label}</th>`;
             });
-
-            // Q4: extract keywords
-            const q4Data = data.q4 || [];
-            if (Array.isArray(q4Data) && q4Data.length > 0) {
-                const wordCount = {};
-                q4Data.forEach(text => {
-                    if (!text) return;
-                    const words = text.split(/[\s,，、。.！!;；：:]+/).filter(w => w.length > 1);
-                    words.forEach(w => {
-                        const key = w.toLowerCase();
-                        wordCount[key] = (wordCount[key] || 0) + 1;
+            html += `<th>Total</th></tr></thead>`;
+            
+            // Table body
+            html += `<tbody>`;
+            data.tableData.forEach(row => {
+                html += `<tr>`;
+                html += `<td class="class-cell">${row.class}</td>`;
+                
+                data.questions.forEach(q => {
+                    const qData = row[q.id];
+                    if (!qData || typeof qData !== 'object') {
+                        html += `<td class="question-cell">—</td>`;
+                        return;
+                    }
+                    
+                    // Build option badges
+                    const options = Object.keys(qData);
+                    let cellHtml = '';
+                    options.forEach(opt => {
+                        const pct = qData[opt];
+                        if (pct > 0) {
+                            cellHtml += `<span class="option-badge">${opt} <span class="pct">${pct}%</span></span>`;
+                        }
                     });
+                    html += `<td class="question-cell">${cellHtml || '—'}</td>`;
                 });
-                const sortedWords = Object.entries(wordCount).sort((a, b) => b[1] - a[1]).slice(0, 8);
-                let wordHtml = '';
-                if (sortedWords.length > 0) {
-                    sortedWords.forEach(([word, count]) => {
-                        wordHtml += `<span class="stat-badge"><span class="label">${word}</span> <span class="count">${count}</span></span>`;
-                    });
-                } else {
-                    wordHtml = '<span class="result-empty">No keywords yet</span>';
-                }
-                html += `<div class="result-item">
-                            <div class="rq">${qLabels.q4} <small>${q4Data.length} responses</small></div>
-                            <div class="result-stats">${wordHtml}</div>
-                        </div>`;
-            } else {
-                html += `<div class="result-item"><div class="rq">${qLabels.q4}</div><div class="result-empty">No data yet</div></div>`;
-            }
-
-            // Q5
-            const q5Data = data.q5 || {};
-            if (typeof q5Data === 'object' && Object.keys(q5Data).length > 0) {
-                const sorted = Object.entries(q5Data).sort((a, b) => b[1] - a[1]);
-                const total = sorted.reduce((sum, [, count]) => sum + count, 0);
-                let statsHtml = '';
-                sorted.forEach(([label, count]) => {
-                    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-                    statsHtml += `<span class="stat-badge"><span class="label">${label}</span> <span class="count">${count}</span> <span style="color:#5a554b;font-size:0.8rem;">(${pct}%)</span></span>`;
+                
+                html += `<td class="total-cell">${row.total}</td>`;
+                html += `</tr>`;
+            });
+            html += `</tbody></table></div>`;
+            
+            // Free responses section
+            if (data.freeResponses && data.freeResponses.length > 0) {
+                html += `<div class="free-responses-section">`;
+                html += `<h4>📝 Free Responses (Q4: What do you hope to gain from this course?)</h4>`;
+                html += `<div class="free-responses-grid">`;
+                data.freeResponses.forEach(item => {
+                    html += `<div class="free-response-item">`;
+                    html += `<span class="meta">${item.class}</span>`;
+                    html += `<span>${item.response}</span>`;
+                    html += `</div>`;
                 });
-                html += `<div class="result-item">
-                            <div class="rq">${qLabels.q5} <small>Total votes: ${total}</small></div>
-                            <div class="result-stats">${statsHtml}</div>
-                        </div>`;
-            } else {
-                html += `<div class="result-item"><div class="rq">${qLabels.q5}</div><div class="result-empty">No data yet</div></div>`;
+                html += `</div></div>`;
             }
+            
+            // Total responses
+            html += `<div style="margin-top: 1rem; font-size: 0.9rem; color: #5e5a52;">`;
+            html += `<strong>Total Responses:</strong> ${data.totalResponses || 0}`;
+            html += `</div>`;
 
             resultsContent.innerHTML = html;
         }
