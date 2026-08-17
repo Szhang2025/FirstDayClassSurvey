@@ -68,7 +68,6 @@
         .stanford-context .highlight { background: #e8e2d7; padding: 0.1rem 0.4rem; border-radius: 12px; font-weight: 500; }
         .class-selector-wrapper { margin-bottom: 0.2rem; }
         .class-selector-wrapper label { font-weight: 500; color: #2a2722; font-size: 0.95rem; display: block; margin-bottom: 0.3rem; }
-        .debug-info { background: #f5f3ee; padding: 0.8rem 1.2rem; border-radius: 12px; font-size: 0.75rem; color: #5e5a52; margin-top: 0.5rem; display: none; font-family: monospace; white-space: pre-wrap; word-break: break-all; max-height: 200px; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -169,8 +168,6 @@
             <div class="result-empty">Click "View Survey Results" to load data.</div>
         </div>
         
-        <div id="debugInfo" class="debug-info"></div>
-        
         <div id="stanfordContext" class="stanford-context" style="display: none;">
             <p><strong>📊 Stanford AI Index Report</strong></p>
             <p><span class="highlight">84%</span> of Chinese respondents are excited about AI (highest globally), compared to <span class="highlight">38%</span> in the US.</p>
@@ -193,7 +190,6 @@
         const resultsPanel = document.getElementById('resultsPanel');
         const resultsContent = document.getElementById('resultsContent');
         const stanfordContext = document.getElementById('stanfordContext');
-        const debugInfo = document.getElementById('debugInfo');
         const classSelect = document.getElementById('classSelect');
 
         const tsField = document.getElementById('timestampField');
@@ -261,12 +257,14 @@
             showResultsBtn.innerHTML = '<span class="loading-spinner"></span> Loading...';
 
             try {
-                const response = await fetch(SCRIPT_URL, { method: 'GET', mode: 'cors', cache: 'no-cache', headers: { 'Accept': 'application/json' } });
+                const response = await fetch(SCRIPT_URL, { 
+                    method: 'GET', 
+                    mode: 'cors', 
+                    cache: 'no-cache', 
+                    headers: { 'Accept': 'application/json' } 
+                });
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
-                
-                debugInfo.style.display = 'block';
-                debugInfo.textContent = 'Raw data: ' + JSON.stringify(data, null, 2);
                 
                 renderResults(data);
                 resultsPanel.classList.add('visible');
@@ -277,8 +275,6 @@
                 showToast('Unable to load results. Check Apps Script deployment.', true);
                 resultsPanel.classList.add('visible');
                 resultsContent.innerHTML = `<div class="result-empty">Load failed: ${err.message}</div>`;
-                debugInfo.style.display = 'block';
-                debugInfo.textContent = 'Error: ' + err.message;
             } finally {
                 showResultsBtn.disabled = false;
                 showResultsBtn.innerHTML = 'View Survey Results';
@@ -319,7 +315,7 @@
             html += '</tbody></table></div>';
 
             if (data.freeResponses && data.freeResponses.length > 0) {
-                html += `<div class="free-responses-section"><h4>📝 Free Responses (Q4)</h4><div class="free-responses-grid">`;
+                html += `<div class="free-responses-section"><h4>📝 Free Responses (Q4: What do you hope to gain from this course?)</h4><div class="free-responses-grid">`;
                 data.freeResponses.forEach(item => {
                     html += `<div class="free-response-item"><span class="meta">${item.class || 'Unspecified'}</span><span>${item.response}</span></div>`;
                 });
