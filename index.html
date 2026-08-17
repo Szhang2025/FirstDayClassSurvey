@@ -238,6 +238,22 @@
             cursor: not-allowed;
             transform: none;
         }
+        .btn-success {
+            background: #2d6a4f;
+            color: white;
+            border: 1px solid #1b4a36;
+            box-shadow: 0 6px 14px rgba(45, 106, 79, 0.2);
+        }
+        .btn-success:hover {
+            background: #1b4a36;
+            transform: scale(1.01);
+            box-shadow: 0 10px 20px rgba(45, 106, 79, 0.25);
+        }
+        .btn-success:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
         .toast-message {
             margin-top: 0.6rem;
             background: #e2f0e6;
@@ -449,6 +465,16 @@
             display: block;
             margin-bottom: 0.3rem;
         }
+        .action-bar-with-download {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 1.2rem 2rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e3ded5;
+        }
     </style>
 </head>
 <body>
@@ -484,13 +510,12 @@
                 </div>
             </div>
 
-            <!-- Q1: Height in inches -->
+            <!-- Q1-Q19 (same as before) -->
             <div class="question-block">
                 <div class="q-title"><span class="q-num">1</span> What is your height? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(in inches, 1 foot = 12 inches)</span></div>
                 <input type="number" class="number-input" name="q1_height" id="q1_height" placeholder="e.g., 68" min="40" max="96" step="0.5" />
             </div>
 
-            <!-- Q2: Gender -->
             <div class="question-block">
                 <div class="q-title"><span class="q-num">2</span> What is your gender? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(single choice)</span></div>
                 <div class="options-grid">
@@ -501,25 +526,21 @@
                 </div>
             </div>
 
-            <!-- Q3: Study Hours -->
             <div class="question-block">
                 <div class="q-title"><span class="q-num">3</span> Aside from class time, how many hours per week, on average, do you expect to spend studying for this course? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(rounded up to nearest hour)</span></div>
                 <input type="number" class="number-input" name="q3_study_hours" id="q3_study_hours" placeholder="e.g., 6" min="0" max="50" step="1" />
             </div>
 
-            <!-- Q4: Screen Time -->
             <div class="question-block">
-                <div class="q-title"><span class="q-num">4</span> How many minutes per day, on average, do you spend on screens (browsing the Internet, watching TV, video streaming, etc.)? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(in minutes)</span></div>
+                <div class="q-title"><span class="q-num">4</span> How many minutes per day, on average, do you spend on screens? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(in minutes)</span></div>
                 <input type="number" class="number-input" name="q4_screen_time" id="q4_screen_time" placeholder="e.g., 210" min="0" max="1440" step="1" />
             </div>
 
-            <!-- Q5: Exercise -->
             <div class="question-block">
-                <div class="q-title"><span class="q-num">5</span> How many hours per week, on average, do you participate in sports or other physical exercise? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(in hours)</span></div>
+                <div class="q-title"><span class="q-num">5</span> How many hours per week, on average, do you participate in sports or physical exercise? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(in hours)</span></div>
                 <input type="number" class="number-input" name="q5_exercise_hours" id="q5_exercise_hours" placeholder="e.g., 3" min="0" max="50" step="1" />
             </div>
 
-            <!-- Q6: Happiness -->
             <div class="question-block">
                 <div class="q-title"><span class="q-num">6</span> How would you rate your overall happiness? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(single choice)</span></div>
                 <div class="options-grid">
@@ -531,19 +552,16 @@
                 </div>
             </div>
 
-            <!-- Q7: Pets -->
             <div class="question-block">
                 <div class="q-title"><span class="q-num">7</span> How many pets do you have? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(whole number)</span></div>
                 <input type="number" class="number-input" name="q7_pets" id="q7_pets" placeholder="e.g., 2" min="0" max="100" step="1" />
             </div>
 
-            <!-- Q8: Phone Usage -->
             <div class="question-block">
                 <div class="q-title"><span class="q-num">8</span> How many minutes have you spent using your phone so far today? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(number)</span></div>
                 <input type="number" class="number-input" name="q8_phone_minutes" id="q8_phone_minutes" placeholder="e.g., 120" min="0" max="1440" step="1" />
             </div>
 
-            <!-- Q9: Born in US -->
             <div class="question-block">
                 <div class="q-title"><span class="q-num">9</span> Were you born in the United States? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(single choice)</span></div>
                 <div class="options-grid">
@@ -552,9 +570,8 @@
                 </div>
             </div>
 
-            <!-- Q10: Movie Theater -->
             <div class="question-block">
-                <div class="q-title"><span class="q-num">10</span> How long has it been since you've seen a movie in a movie theater? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(single choice)</span></div>
+                <div class="q-title"><span class="q-num">10</span> How long since you've seen a movie in a theater? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(single choice)</span></div>
                 <div class="options-grid">
                     <div class="option-item"><input type="radio" name="q10_movie" value="Less than 7 days" /> <label>Less than 7 days</label></div>
                     <div class="option-item"><input type="radio" name="q10_movie" value="7 - 14 days" /> <label>7 - 14 days</label></div>
@@ -564,22 +581,19 @@
                 </div>
             </div>
 
-            <!-- Q11: Stuffed Animals -->
             <div class="question-block">
                 <div class="q-title"><span class="q-num">11</span> How many stuffed animals do you own? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(whole number)</span></div>
                 <input type="number" class="number-input" name="q11_stuffed_animals" id="q11_stuffed_animals" placeholder="e.g., 3" min="0" max="1000" step="1" />
             </div>
 
-            <!-- Q12: Other Institution -->
             <div class="question-block">
-                <div class="q-title"><span class="q-num">12</span> Have you attended an institution besides SCSU after graduating high school? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(single choice)</span></div>
+                <div class="q-title"><span class="q-num">12</span> Have you attended an institution besides SCSU after high school? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(single choice)</span></div>
                 <div class="options-grid">
                     <div class="option-item"><input type="radio" name="q12_other_institution" value="Yes" /> <label>Yes</label></div>
                     <div class="option-item"><input type="radio" name="q12_other_institution" value="No" /> <label>No</label></div>
                 </div>
             </div>
 
-            <!-- Q13: Year -->
             <div class="question-block">
                 <div class="q-title"><span class="q-num">13</span> What year of university are you currently in? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(single choice)</span></div>
                 <div class="options-grid">
@@ -591,13 +605,11 @@
                 </div>
             </div>
 
-            <!-- Q14: Random Number -->
             <div class="question-block">
-                <div class="q-title"><span class="q-num">14</span> Randomly select a whole number between 1 and 10 (inclusive). <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(whole number)</span></div>
+                <div class="q-title"><span class="q-num">14</span> Randomly select a whole number between 1 and 10. <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(whole number)</span></div>
                 <input type="number" class="number-input" name="q14_random_number" id="q14_random_number" placeholder="e.g., 7" min="1" max="10" step="1" />
             </div>
 
-            <!-- Q15: Course Value -->
             <div class="question-block">
                 <div class="q-title"><span class="q-num">15</span> What do you value more in this course? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(single choice)</span></div>
                 <div class="options-grid">
@@ -607,7 +619,6 @@
                 </div>
             </div>
 
-            <!-- Q16: AI Excitement -->
             <div class="question-block">
                 <div class="q-title"><span class="q-num">16</span> How do you feel about artificial intelligence? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(single choice)</span></div>
                 <div class="options-grid">
@@ -617,7 +628,6 @@
                 </div>
             </div>
 
-            <!-- Q17: AI Trust -->
             <div class="question-block">
                 <div class="q-title"><span class="q-num">17</span> How much trust do you have in AI systems? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(single choice)</span></div>
                 <div class="options-grid">
@@ -627,13 +637,11 @@
                 </div>
             </div>
 
-            <!-- Q18: Course Goals -->
             <div class="question-block">
                 <div class="q-title"><span class="q-num">18</span> What do you hope to gain from this course? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(short answer)</span></div>
                 <textarea class="text-input text-input-short" name="q18_expectation" id="q18_expectation" placeholder="e.g., I want to master data analysis and complete a capstone project."></textarea>
             </div>
 
-            <!-- Q19: Course Emphasis -->
             <div class="question-block">
                 <div class="q-title"><span class="q-num">19</span> What should the course emphasize? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(select all that apply)</span></div>
                 <div class="options-grid vertical" style="gap: 0.2rem;">
@@ -670,6 +678,12 @@
                 <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #5e5a52;">Source: Stanford University Human-Centered AI Institute · AI Index Report</p>
             </div>
 
+            <!-- Download button and action bar -->
+            <div class="action-bar-with-download">
+                <button type="button" class="btn btn-success" id="downloadCsvBtn">📥 Download Data (CSV)</button>
+                <button type="button" class="btn btn-secondary" id="refreshResultsBtn">🔄 Refresh Results</button>
+            </div>
+
             <div class="footnote" style="margin-top:1rem;">Data from Google Sheets · Auto-updated</div>
         </div>
     </div>
@@ -681,11 +695,16 @@
             const form = document.getElementById('surveyForm');
             const submitBtn = document.getElementById('submitBtn');
             const showResultsBtn = document.getElementById('showResultsBtn');
+            const downloadBtn = document.getElementById('downloadCsvBtn');
+            const refreshBtn = document.getElementById('refreshResultsBtn');
             const toast = document.getElementById('toastMessage');
             const resultsPanel = document.getElementById('resultsPanel');
             const resultsContent = document.getElementById('resultsContent');
             const stanfordContext = document.getElementById('stanfordContext');
             const classSelect = document.getElementById('classSelect');
+
+            // Store the latest data for download
+            let latestData = null;
 
             const tsField = document.getElementById('timestampField');
             if (tsField) tsField.value = new Date().toLocaleString('en-US', { hour12: false });
@@ -810,6 +829,9 @@
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     const data = await response.json();
 
+                    // Store data for download
+                    latestData = data;
+
                     renderResults(data);
                     resultsPanel.classList.add('visible');
                     stanfordContext.style.display = 'block';
@@ -837,7 +859,6 @@
                     return;
                 }
 
-                // Define which questions are quantitative (numeric)
                 const quantitativeQuestions = ['q1', 'q3', 'q4', 'q5', 'q7', 'q8', 'q11', 'q14'];
 
                 const questionLabels = {
@@ -883,9 +904,7 @@
                         let displayText = '';
 
                         if (quantitativeQuestions.includes(qId)) {
-                            // Quantitative: Calculate Mean and Standard Deviation
                             const values = [];
-
                             Object.keys(qData).forEach(value => {
                                 const numValue = parseFloat(value);
                                 if (!isNaN(numValue)) {
@@ -907,10 +926,8 @@
                                 displayText = '—';
                             }
                         } else {
-                            // Categorical: Show percentages
                             const sorted = Object.entries(qData).sort((a, b) => b[1] - a[1]);
                             const total = sorted.reduce((sum, [, count]) => sum + count, 0);
-
                             if (total > 0) {
                                 const parts = [];
                                 sorted.forEach(([label, count]) => {
@@ -933,7 +950,6 @@
 
                 html += '</tbody></table></div>';
 
-                // Free responses
                 if (data.freeResponses && data.freeResponses.length > 0) {
                     const groupedResponses = {};
                     data.freeResponses.forEach(item => {
@@ -965,7 +981,85 @@
                 resultsContent.innerHTML = html;
             }
 
+            // ==================== DOWNLOAD CSV ====================
+            function downloadCSV() {
+                if (!latestData || !latestData.rawData || latestData.rawData.length === 0) {
+                    showToast('No raw data available to download. Load results first.', true);
+                    return;
+                }
+
+                try {
+                    // Define all column headers for raw data
+                    const headers = [
+                        'Timestamp', 'Class',
+                        'Height (inches)', 'Gender', 'Study Hrs/Week', 'Screen Time (min)',
+                        'Exercise (hrs)', 'Happiness', 'Pets (count)', 'Phone (min)',
+                        'Born in US', 'Movie Theater', 'Stuffed Animals', 'Other Institution',
+                        'Year', 'Random #', 'Grade vs. Skills', 'AI Excitement', 'AI Trust',
+                        'Course Expectations (Q18)', 'Course Emphasis (Q19)'
+                    ];
+
+                    // Build CSV rows from rawData
+                    let csvRows = [];
+                    csvRows.push(headers.join(','));
+
+                    latestData.rawData.forEach(row => {
+                        const rowData = [
+                            row.timestamp || '',
+                            row.class || 'Unspecified',
+                            row.q1_height || '',
+                            row.q2_gender || '',
+                            row.q3_study_hours || '',
+                            row.q4_screen_time || '',
+                            row.q5_exercise_hours || '',
+                            row.q6_happiness || '',
+                            row.q7_pets || '',
+                            row.q8_phone_minutes || '',
+                            row.q9_born_us || '',
+                            row.q10_movie || '',
+                            row.q11_stuffed_animals || '',
+                            row.q12_other_institution || '',
+                            row.q13_year || '',
+                            row.q14_random_number || '',
+                            row.q15_value || '',
+                            row.q16_ai_excite || '',
+                            row.q17_ai_trust || '',
+                            row.q18_expectation || '',
+                            row.q19_emphasis || ''
+                        ];
+                        // Escape quotes and handle commas in text fields
+                        const escapedRow = rowData.map(cell => {
+                            if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"') || cell.includes('\n'))) {
+                                return `"${cell.replace(/"/g, '""')}"`;
+                            }
+                            return cell;
+                        });
+                        csvRows.push(escapedRow.join(','));
+                    });
+
+                    // Create and download CSV
+                    const csvContent = csvRows.join('\n');
+                    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement('a');
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', `survey_data_${new Date().toISOString().slice(0,10)}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+
+                    showToast('CSV downloaded successfully!');
+                } catch (err) {
+                    console.error('Download error:', err);
+                    showToast('Failed to download CSV. Please try again.', true);
+                }
+            }
+
+            // ==================== EVENT BINDING ====================
             showResultsBtn.addEventListener('click', fetchResults);
+            refreshBtn.addEventListener('click', fetchResults);
+            downloadBtn.addEventListener('click', downloadCSV);
         })();
     </script>
 </body>
