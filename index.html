@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>First Day · Class Survey (with Results)</title>
+    <title>First Day · Class Survey</title>
     <style>
         * {
             margin: 0;
@@ -83,14 +83,6 @@
             font-size: 0.98rem;
             line-height: 1.6;
             color: #2a2722;
-        }
-
-        .intro strong { color: #8b1e2b; }
-        .intro .stat-highlight {
-            background: #e8e2d7;
-            padding: 0.1rem 0.4rem;
-            border-radius: 12px;
-            font-weight: 500;
         }
 
         .question-block {
@@ -272,14 +264,6 @@
             border-color: #dbb8b0;
         }
 
-        .inline-highlight {
-            background: #f1ede4;
-            padding: 0.1rem 0.5rem;
-            border-radius: 20px;
-            font-weight: 500;
-            color: #3d2f1f;
-        }
-
         .loading-spinner {
             display: inline-block;
             width: 18px;
@@ -382,6 +366,26 @@
             font-size: 0.75rem;
             font-weight: 500;
         }
+
+        .stanford-context {
+            margin-top: 1.5rem;
+            padding-top: 1.2rem;
+            border-top: 2px solid #8b1e2b;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #2a2722;
+        }
+
+        .stanford-context strong {
+            color: #8b1e2b;
+        }
+
+        .stanford-context .highlight {
+            background: #e8e2d7;
+            padding: 0.1rem 0.4rem;
+            border-radius: 12px;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -393,96 +397,98 @@
     </div>
 
     <div class="intro">
-        <p style="margin-bottom: 6px;">
-            <strong>📊 Stanford AI Index Report</strong> · 84% of Chinese respondents are excited about AI 
-            <span class="stat-highlight">(highest globally)</span>, compared to 38% in the US. 
-            Additionally, <strong>72%</strong> in China trust AI, vs. 32% in the US.
-        </p>
-        <p style="margin-top: 8px; font-size:0.95rem;">
-            Complete the survey and click <strong>"View Survey Results"</strong> to see real-time class statistics.
-        </p>
+        <p>Please complete this brief survey about your course expectations and perspectives. Your responses are anonymous and will help shape our learning environment.</p>
     </div>
 
-    <!-- Survey Form -->
     <form id="surveyForm" onsubmit="return handleSubmit(event)">
         <!-- Q1 -->
         <div class="question-block">
-            <div class="q-title"><span class="q-num">1</span> Grade vs. Knowledge/Skills <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(单选)</span></div>
-            <div class="q-desc"><span class="inline-highlight">🤔 What matters more?</span> In this course, which do you value more?</div>
+            <div class="q-title"><span class="q-num">1</span> What do you value more in this course? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(single choice)</span></div>
             <div class="options-grid">
-                <div class="option-item"><input type="radio" name="q1_grade_skill" value="Grade (GPA)" /> <label>📝 Grade (GPA)</label></div>
-                <div class="option-item"><input type="radio" name="q1_grade_skill" value="Knowledge/Skills" /> <label>🧠 Knowledge / Skills</label></div>
-                <div class="option-item"><input type="radio" name="q1_grade_skill" value="Both equally" /> <label>⚖️ Both equally</label></div>
+                <div class="option-item"><input type="radio" name="q1_grade_skill" value="Grade (GPA)" /> <label>Grade (GPA)</label></div>
+                <div class="option-item"><input type="radio" name="q1_grade_skill" value="Knowledge and Skills" /> <label>Knowledge and Skills</label></div>
+                <div class="option-item"><input type="radio" name="q1_grade_skill" value="Both equally" /> <label>Both equally</label></div>
             </div>
         </div>
 
         <!-- Q2 -->
         <div class="question-block">
-            <div class="q-title"><span class="q-num">2</span> How excited are you about AI? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(单选)</span></div>
-            <div class="q-desc"><span class="inline-highlight">🚀 Reference: China 84% excited · US 38%</span> How do you feel about AI?</div>
+            <div class="q-title"><span class="q-num">2</span> How do you feel about artificial intelligence? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(single choice)</span></div>
             <div class="options-grid">
-                <div class="option-item"><input type="radio" name="q2_ai_excite" value="Very excited" /> <label>😃 Very excited</label></div>
-                <div class="option-item"><input type="radio" name="q2_ai_excite" value="Neutral" /> <label>😐 Neutral</label></div>
-                <div class="option-item"><input type="radio" name="q2_ai_excite" value="Skeptical" /> <label>🤨 Skeptical</label></div>
+                <div class="option-item"><input type="radio" name="q2_ai_excite" value="Very excited" /> <label>Very excited</label></div>
+                <div class="option-item"><input type="radio" name="q2_ai_excite" value="Neutral" /> <label>Neutral</label></div>
+                <div class="option-item"><input type="radio" name="q2_ai_excite" value="Skeptical" /> <label>Skeptical</label></div>
             </div>
         </div>
 
         <!-- Q3 -->
         <div class="question-block">
-            <div class="q-title"><span class="q-num">3</span> How much do you trust AI? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(单选)</span></div>
-            <div class="q-desc"><span class="inline-highlight">🔐 Reference: China 72% trust · US 32%</span> Do you trust AI systems/tools?</div>
+            <div class="q-title"><span class="q-num">3</span> How much trust do you have in AI systems? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(single choice)</span></div>
             <div class="options-grid">
-                <div class="option-item"><input type="radio" name="q3_ai_trust" value="Trust" /> <label>✅ Trust</label></div>
-                <div class="option-item"><input type="radio" name="q3_ai_trust" value="Neutral" /> <label>⚖️ Neutral</label></div>
-                <div class="option-item"><input type="radio" name="q3_ai_trust" value="Distrust" /> <label>❌ Distrust</label></div>
+                <div class="option-item"><input type="radio" name="q3_ai_trust" value="High trust" /> <label>High trust</label></div>
+                <div class="option-item"><input type="radio" name="q3_ai_trust" value="Neutral" /> <label>Neutral</label></div>
+                <div class="option-item"><input type="radio" name="q3_ai_trust" value="Low trust" /> <label>Low trust</label></div>
             </div>
         </div>
 
-        <!-- Q4 Open-ended -->
+        <!-- Q4 -->
         <div class="question-block">
             <div class="q-title"><span class="q-num">4</span> What do you hope to gain from this course? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(short answer)</span></div>
-            <div class="q-desc"><span class="inline-highlight">💡 Personal goals</span> Skills, mindset, projects, connections…</div>
-            <textarea class="text-input text-input-short" name="q4_expectation" placeholder="e.g., I want to master Python data analysis and complete a capstone project."></textarea>
+            <textarea class="text-input text-input-short" name="q4_expectation" placeholder="e.g., I want to master data analysis and complete a capstone project."></textarea>
         </div>
 
-        <!-- Q5 Multi-select -->
+        <!-- Q5 -->
         <div class="question-block">
-            <div class="q-title"><span class="q-num">5</span> What should the course focus on? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(select all that apply)</span></div>
-            <div class="q-desc"><span class="inline-highlight">🎯 Teaching style</span> Choose 1–3 that matter most to you.</div>
+            <div class="q-title"><span class="q-num">5</span> What should the course emphasize? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(select all that apply)</span></div>
             <div class="options-grid vertical" style="gap: 0.2rem;">
-                <div class="option-item"><input type="checkbox" name="q5_style" value="Theoretical depth" /> <label>📚 Theoretical depth</label></div>
-                <div class="option-item"><input type="checkbox" name="q5_style" value="Hands-on projects" /> <label>🛠️ Hands-on projects</label></div>
-                <div class="option-item"><input type="checkbox" name="q5_style" value="Class interaction" /> <label>🗣️ Class interaction/discussion</label></div>
-                <div class="option-item"><input type="checkbox" name="q5_style" value="Cutting-edge cases" /> <label>🚀 Cutting-edge cases (AI/Data Science)</label></div>
-                <div class="option-item"><input type="checkbox" name="q5_style" value="Career development" /> <label>💼 Career development / industry links</label></div>
+                <div class="option-item"><input type="checkbox" name="q5_style" value="Theoretical depth" /> <label>Theoretical depth</label></div>
+                <div class="option-item"><input type="checkbox" name="q5_style" value="Hands-on projects" /> <label>Hands-on projects</label></div>
+                <div class="option-item"><input type="checkbox" name="q5_style" value="Class interaction" /> <label>Class interaction and discussion</label></div>
+                <div class="option-item"><input type="checkbox" name="q5_style" value="Cutting-edge cases" /> <label>Cutting-edge cases</label></div>
+                <div class="option-item"><input type="checkbox" name="q5_style" value="Career development" /> <label>Career development and industry links</label></div>
             </div>
         </div>
 
         <input type="hidden" name="timestamp" id="timestampField" value="" />
 
-        <!-- Buttons -->
         <div class="action-bar">
-            <button type="submit" class="btn btn-primary" id="submitBtn">📤 Submit Survey</button>
-            <button type="button" class="btn btn-secondary" id="showResultsBtn">📊 View Survey Results</button>
+            <button type="submit" class="btn btn-primary" id="submitBtn">Submit Survey</button>
+            <button type="button" class="btn btn-secondary" id="showResultsBtn">View Survey Results</button>
         </div>
 
-        <div id="toastMessage" class="toast-message">✅ Successfully submitted to Google Sheets!</div>
+        <div id="toastMessage" class="toast-message">Successfully submitted!</div>
     </form>
 
     <!-- Results Panel -->
     <div id="resultsPanel" class="results-panel">
-        <h3>📊 Class Survey Results <span class="badge-icon">Live</span></h3>
+        <h3>Class Survey Results <span class="badge-icon">Live</span></h3>
         <div id="resultsContent">
-            <div class="result-empty">Click "View Survey Results" to load data…</div>
+            <div class="result-empty">Click "View Survey Results" to load data.</div>
         </div>
+        
+        <!-- Stanford context appears only after results are shown -->
+        <div id="stanfordContext" class="stanford-context" style="display: none;">
+            <p><strong>Stanford AI Index Report 2025</strong></p>
+            <p>
+                <span class="highlight">84%</span> of Chinese respondents reported being excited about AI 
+                (the highest among all surveyed countries), compared to <span class="highlight">38%</span> in the United States.
+            </p>
+            <p style="margin-top: 0.5rem;">
+                <span class="highlight">72%</span> of Chinese respondents expressed trust in AI, 
+                while only <span class="highlight">32%</span> of Americans said the same.
+            </p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #5e5a52;">
+                Source: Stanford University Human-Centered AI Institute · AI Index Report 2025
+            </p>
+        </div>
+        
         <div class="footnote" style="margin-top:1rem;">Data from Google Sheets · Auto-updated</div>
     </div>
 </div>
 
 <script>
     (function() {
-        // ---------- CONFIG ----------
-        // Replace with your Google Apps Script Web App URL (supports POST for submit, GET for results)
+        // Google Apps Script Web App URL
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQPd_Hxwzz60vAJTEqmlCOiqjTSZYSAliu2LQnezH39SYoPreB_2EmkXsWMEr2aNK-/exec';
 
         // DOM elements
@@ -492,6 +498,7 @@
         const toast = document.getElementById('toastMessage');
         const resultsPanel = document.getElementById('resultsPanel');
         const resultsContent = document.getElementById('resultsContent');
+        const stanfordContext = document.getElementById('stanfordContext');
 
         // Timestamp
         const tsField = document.getElementById('timestampField');
@@ -499,7 +506,7 @@
             tsField.value = new Date().toLocaleString('en-US', { hour12: false });
         }
 
-        // ---------- Toast ----------
+        // Toast
         function showToast(msg, isError = false) {
             toast.textContent = msg;
             toast.className = 'toast-message show' + (isError ? ' error' : '');
@@ -507,7 +514,7 @@
             window.toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 5000);
         }
 
-        // ---------- Helpers ----------
+        // Helpers
         function getRadioValue(name) {
             const el = document.querySelector(`input[name="${name}"]:checked`);
             return el ? el.value : '';
@@ -518,7 +525,7 @@
             return Array.from(checked).map(el => el.value);
         }
 
-        // ---------- Submit Survey ----------
+        // Submit Survey
         window.handleSubmit = function(event) {
             event.preventDefault();
 
@@ -526,7 +533,7 @@
             const q2 = getRadioValue('q2_ai_excite');
             const q3 = getRadioValue('q3_ai_trust');
             if (!q1 || !q2 || !q3) {
-                showToast('⚠️ Please answer all single-choice questions (Q1, Q2, Q3) before submitting.', true);
+                showToast('Please answer all single-choice questions (Q1, Q2, Q3).', true);
                 return false;
             }
 
@@ -555,22 +562,22 @@
             })
             .then(() => {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '📤 Submit Survey';
-                showToast('✅ Successfully submitted to Google Sheets!');
+                submitBtn.innerHTML = 'Submit Survey';
+                showToast('Successfully submitted to Google Sheets!');
                 submitBtn.style.transform = 'scale(0.97)';
                 setTimeout(() => submitBtn.style.transform = '', 200);
             })
             .catch(err => {
                 console.error(err);
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '📤 Submit Survey';
-                showToast('⚠️ Submission failed. Please check your network or contact TA.', true);
+                submitBtn.innerHTML = 'Submit Survey';
+                showToast('Submission failed. Please check your network.', true);
             });
 
             return false;
         };
 
-        // ---------- Fetch & Render Results ----------
+        // Fetch & Render Results
         async function fetchResults() {
             showResultsBtn.disabled = true;
             showResultsBtn.innerHTML = '<span class="loading-spinner"></span> Loading...';
@@ -589,19 +596,20 @@
                 const data = await response.json();
                 renderResults(data);
                 resultsPanel.classList.add('visible');
-                showToast('📊 Results updated');
+                stanfordContext.style.display = 'block';
+                showToast('Results updated');
             } catch (err) {
                 console.error('Failed to fetch results:', err);
-                showToast('⚠️ Unable to load results. Check Apps Script deployment and return JSON.', true);
+                showToast('Unable to load results. Check Apps Script deployment.', true);
                 resultsPanel.classList.add('visible');
-                resultsContent.innerHTML = `<div class="result-empty">⚠️ Load failed: ${err.message}. Check console or contact TA.</div>`;
+                resultsContent.innerHTML = `<div class="result-empty">Load failed: ${err.message}. Check console or contact TA.</div>`;
             } finally {
                 showResultsBtn.disabled = false;
-                showResultsBtn.innerHTML = '📊 View Survey Results';
+                showResultsBtn.innerHTML = 'View Survey Results';
             }
         }
 
-        // ---------- Render Results ----------
+        // Render Results
         function renderResults(data) {
             if (!data || typeof data !== 'object') {
                 resultsContent.innerHTML = `<div class="result-empty">No data available. Please submit surveys first.</div>`;
@@ -618,7 +626,6 @@
 
             let html = '';
 
-            // Q1~Q3 (single-choice)
             ['q1', 'q2', 'q3'].forEach(key => {
                 const qData = data[key];
                 if (!qData || typeof qData !== 'object' || Object.keys(qData).length === 0) {
@@ -638,7 +645,7 @@
                         </div>`;
             });
 
-            // Q4: extract keywords (top 8)
+            // Q4: extract keywords
             const q4Data = data.q4 || [];
             if (Array.isArray(q4Data) && q4Data.length > 0) {
                 const wordCount = {};
@@ -667,7 +674,7 @@
                 html += `<div class="result-item"><div class="rq">${qLabels.q4}</div><div class="result-empty">No data yet</div></div>`;
             }
 
-            // Q5: multi-select
+            // Q5
             const q5Data = data.q5 || {};
             if (typeof q5Data === 'object' && Object.keys(q5Data).length > 0) {
                 const sorted = Object.entries(q5Data).sort((a, b) => b[1] - a[1]);
@@ -688,20 +695,9 @@
             resultsContent.innerHTML = html;
         }
 
-        // ---------- Bind Events ----------
+        // Bind Events
         showResultsBtn.addEventListener('click', fetchResults);
-
-        // Optionally auto-load results on page load (comment out if not desired)
-        // setTimeout(fetchResults, 600);
     })();
 </script>
-
-<!--
-  INSTRUCTIONS:
-  1. Deploy a Google Apps Script with doPost(e) and doGet(e).
-  2. doGet(e) should read spreadsheet data, compute counts, and return JSON.
-  3. Replace SCRIPT_URL with your Web App URL.
-  4. This page supports both survey submission and results viewing.
--->
 </body>
 </html>
