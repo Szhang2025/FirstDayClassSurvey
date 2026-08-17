@@ -5,484 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>First Day · Class Survey</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background: #f7f5f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 2rem 1rem;
-        }
-
-        .survey-card {
-            max-width: 1100px;
-            width: 100%;
-            background: white;
-            border-radius: 40px;
-            padding: 2.8rem 2.8rem 2.5rem;
-            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15), 0 8px 24px -6px rgba(0, 0, 0, 0.05);
-            border: 1px solid #f0ede6;
-        }
-
-        @media (max-width: 768px) {
-            .survey-card { padding: 1.8rem 1.2rem; }
-        }
-
-        .header {
-            border-bottom: 3px solid #8b1e2b;
-            padding-bottom: 1.4rem;
-            margin-bottom: 1.8rem;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            color: #1e1e1e;
-            line-height: 1.2;
-        }
-
-        .intro {
-            background: #faf8f4;
-            padding: 1.2rem 1.6rem;
-            border-radius: 24px;
-            margin-bottom: 2rem;
-            border-left: 6px solid #8b1e2b;
-            font-size: 0.98rem;
-            line-height: 1.6;
-            color: #2a2722;
-        }
-
-        .question-block {
-            margin-bottom: 2.2rem;
-        }
-
-        .q-title {
-            font-weight: 600;
-            font-size: 1.05rem;
-            color: #1e1e1e;
-            display: flex;
-            align-items: baseline;
-            gap: 6px;
-            margin-bottom: 0.6rem;
-        }
-
-        .q-title .q-num {
-            background: #8b1e2b;
-            color: white;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 0.1rem 0.65rem;
-            margin-right: 4px;
-        }
-
-        .q-desc {
-            font-size: 0.92rem;
-            color: #3d3a33;
-            margin-bottom: 0.5rem;
-            opacity: 0.8;
-        }
-
-        .options-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.6rem 1.4rem;
-            margin-top: 0.4rem;
-            background: #fbfaf8;
-            padding: 0.7rem 1.2rem 0.5rem 1.2rem;
-            border-radius: 24px;
-            border: 1px solid #ece8e0;
-        }
-
-        .options-grid.vertical {
-            flex-direction: column;
-            gap: 0.3rem;
-        }
-
-        .option-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            padding: 0.15rem 0.2rem;
-            border-radius: 40px;
-            padding-right: 12px;
-            transition: background 0.1s;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background: #f7f5f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 2rem 1rem; }
+        .survey-card { max-width: 1100px; width: 100%; background: white; border-radius: 40px; padding: 2.8rem 2.8rem 2.5rem; box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15), 0 8px 24px -6px rgba(0, 0, 0, 0.05); border: 1px solid #f0ede6; }
+        @media (max-width: 768px) { .survey-card { padding: 1.8rem 1.2rem; } }
+        .header { border-bottom: 3px solid #8b1e2b; padding-bottom: 1.4rem; margin-bottom: 1.8rem; }
+        .header h1 { font-size: 2rem; font-weight: 600; letter-spacing: -0.02em; color: #1e1e1e; }
+        .intro { background: #faf8f4; padding: 1.2rem 1.6rem; border-radius: 24px; margin-bottom: 2rem; border-left: 6px solid #8b1e2b; font-size: 0.98rem; line-height: 1.6; color: #2a2722; }
+        .question-block { margin-bottom: 2.2rem; }
+        .q-title { font-weight: 600; font-size: 1.05rem; color: #1e1e1e; display: flex; align-items: baseline; gap: 6px; margin-bottom: 0.6rem; }
+        .q-title .q-num { background: #8b1e2b; color: white; border-radius: 30px; font-size: 0.75rem; font-weight: 600; padding: 0.1rem 0.65rem; margin-right: 4px; }
+        .q-desc { font-size: 0.92rem; color: #3d3a33; margin-bottom: 0.5rem; opacity: 0.8; }
+        .options-grid { display: flex; flex-wrap: wrap; gap: 0.6rem 1.4rem; margin-top: 0.4rem; background: #fbfaf8; padding: 0.7rem 1.2rem 0.5rem 1.2rem; border-radius: 24px; border: 1px solid #ece8e0; }
+        .options-grid.vertical { flex-direction: column; gap: 0.3rem; }
+        .option-item { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 0.15rem 0.2rem; border-radius: 40px; padding-right: 12px; transition: background 0.1s; }
         .option-item:hover { background: #f0ede6; }
-
-        .option-item input[type="radio"],
-        .option-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #8b1e2b;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .option-item label {
-            font-size: 0.97rem;
-            color: #1f1d1a;
-            cursor: pointer;
-            padding: 2px 0;
-        }
-
-        .dropdown-select {
-            width: 100%;
-            padding: 0.7rem 1.2rem;
-            border: 1px solid #d6d0c4;
-            border-radius: 40px;
-            background: white;
-            font-size: 0.95rem;
-            font-family: inherit;
-            outline: none;
-            transition: 0.15s;
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235e5a52' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1.2rem center;
-        }
-
-        .dropdown-select:focus {
-            border-color: #8b1e2b;
-            box-shadow: 0 0 0 3px rgba(139, 30, 43, 0.15);
-        }
-
-        .text-input {
-            margin-top: 0.5rem;
-            width: 100%;
-            padding: 0.7rem 1.2rem;
-            border: 1px solid #d6d0c4;
-            border-radius: 40px;
-            background: white;
-            font-size: 0.95rem;
-            transition: 0.15s;
-            outline: none;
-            resize: vertical;
-            min-height: 56px;
-            font-family: inherit;
-        }
-
-        .text-input:focus {
-            border-color: #8b1e2b;
-            box-shadow: 0 0 0 3px rgba(139, 30, 43, 0.15);
-        }
-
+        .option-item input[type="radio"], .option-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: #8b1e2b; cursor: pointer; flex-shrink: 0; }
+        .option-item label { font-size: 0.97rem; color: #1f1d1a; cursor: pointer; padding: 2px 0; }
+        .dropdown-select { width: 100%; padding: 0.7rem 1.2rem; border: 1px solid #d6d0c4; border-radius: 40px; background: white; font-size: 0.95rem; font-family: inherit; outline: none; transition: 0.15s; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235e5a52' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1.2rem center; }
+        .dropdown-select:focus { border-color: #8b1e2b; box-shadow: 0 0 0 3px rgba(139, 30, 43, 0.15); }
+        .text-input { margin-top: 0.5rem; width: 100%; padding: 0.7rem 1.2rem; border: 1px solid #d6d0c4; border-radius: 40px; background: white; font-size: 0.95rem; transition: 0.15s; outline: none; resize: vertical; min-height: 56px; font-family: inherit; }
+        .text-input:focus { border-color: #8b1e2b; box-shadow: 0 0 0 3px rgba(139, 30, 43, 0.15); }
         .text-input-short { min-height: 48px; }
-
-        .action-bar {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-            gap: 1.2rem 2rem;
-            margin: 1.8rem 0 1.2rem;
-            border-top: 1px solid #e3ded5;
-            padding-top: 2rem;
-        }
-
-        .btn {
-            border: none;
-            padding: 0.7rem 2.2rem;
-            border-radius: 60px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-        }
-
-        .btn-primary {
-            background: #8b1e2b;
-            color: white;
-            border: 1px solid #701a24;
-            box-shadow: 0 6px 14px rgba(139, 30, 43, 0.2);
-        }
-
-        .btn-primary:hover {
-            background: #701a24;
-            transform: scale(1.01);
-            box-shadow: 0 10px 20px rgba(139, 30, 43, 0.25);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.65;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-secondary {
-            background: #e8e2d7;
-            color: #2a2722;
-            border: 1px solid #ccc6b8;
-        }
-
-        .btn-secondary:hover {
-            background: #ddd6c9;
-            transform: scale(1.01);
-        }
-
-        .btn-secondary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .toast-message {
-            margin-top: 0.6rem;
-            background: #e2f0e6;
-            padding: 0.4rem 1.6rem;
-            border-radius: 60px;
-            color: #1a4a2e;
-            font-weight: 450;
-            display: inline-block;
-            opacity: 0;
-            transition: opacity 0.25s;
-            border: 1px solid #b8d5c2;
-        }
-
+        .action-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 1.2rem 2rem; margin: 1.8rem 0 1.2rem; border-top: 1px solid #e3ded5; padding-top: 2rem; }
+        .btn { border: none; padding: 0.7rem 2.2rem; border-radius: 60px; font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
+        .btn-primary { background: #8b1e2b; color: white; border: 1px solid #701a24; box-shadow: 0 6px 14px rgba(139, 30, 43, 0.2); }
+        .btn-primary:hover { background: #701a24; transform: scale(1.01); box-shadow: 0 10px 20px rgba(139, 30, 43, 0.25); }
+        .btn-primary:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+        .btn-secondary { background: #e8e2d7; color: #2a2722; border: 1px solid #ccc6b8; }
+        .btn-secondary:hover { background: #ddd6c9; transform: scale(1.01); }
+        .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .toast-message { margin-top: 0.6rem; background: #e2f0e6; padding: 0.4rem 1.6rem; border-radius: 60px; color: #1a4a2e; font-weight: 450; display: inline-block; opacity: 0; transition: opacity 0.25s; border: 1px solid #b8d5c2; }
         .toast-message.show { opacity: 1; }
-        .toast-message.error {
-            background: #f8e3e0;
-            color: #8b1e2b;
-            border-color: #dbb8b0;
-        }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 0.8s ease-in-out infinite;
-            vertical-align: middle;
-        }
-
+        .toast-message.error { background: #f8e3e0; color: #8b1e2b; border-color: #dbb8b0; }
+        .loading-spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 0.8s ease-in-out infinite; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        .results-panel {
-            margin-top: 2rem;
-            background: #faf8f4;
-            border-radius: 28px;
-            padding: 1.6rem 1.8rem 1.8rem;
-            border: 1px solid #e3ded5;
-            display: none;
-        }
-
+        .results-panel { margin-top: 2rem; background: #faf8f4; border-radius: 28px; padding: 1.6rem 1.8rem 1.8rem; border: 1px solid #e3ded5; display: none; }
         .results-panel.visible { display: block; }
-
-        .results-panel h3 {
-            font-weight: 600;
-            font-size: 1.2rem;
-            color: #1e1e1e;
-            margin-bottom: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .badge-icon {
-            background: #8b1e2b10;
-            padding: 0.1rem 0.6rem;
-            border-radius: 30px;
-            color: #8b1e2b;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .result-empty {
-            color: #6b655b;
-            font-style: italic;
-            padding: 0.6rem 0;
-        }
-
-        .footnote {
-            margin-top: 1rem;
-            font-size: 0.8rem;
-            color: #6b655b;
-            background: #f4f1eb;
-            padding: 0.2rem 1.2rem;
-            border-radius: 60px;
-            display: inline-block;
-        }
-
-        .results-table-wrapper {
-            overflow-x: auto;
-            margin-bottom: 2rem;
-        }
-
-        .results-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-
-        .results-table thead {
-            background: #8b1e2b;
-            color: white;
-        }
-
-        .results-table th {
-            padding: 0.7rem 0.5rem;
-            text-align: center;
-            font-weight: 600;
-            font-size: 0.8rem;
-            border-right: 1px solid rgba(255,255,255,0.2);
-            min-width: 80px;
-        }
-
-        .results-table th:last-child {
-            border-right: none;
-        }
-
-        .results-table td {
-            padding: 0.5rem 0.4rem;
-            text-align: center;
-            border-bottom: 1px solid #e8e4dc;
-            vertical-align: middle;
-        }
-
-        .results-table tbody tr:hover {
-            background: #f5f3ee;
-        }
-
-        .results-table .class-cell {
-            font-weight: 600;
-            color: #1e1e1e;
-            background: #f5f3ee;
-            text-align: center;
-            padding: 0.5rem 0.6rem;
-            white-space: nowrap;
-        }
-
-        .results-table .question-cell {
-            padding: 0.3rem 0.2rem;
-        }
-
-        .results-table .option-badge {
-            display: inline-block;
-            background: #f0ede6;
-            padding: 0.1rem 0.4rem;
-            border-radius: 10px;
-            font-size: 0.7rem;
-            color: #2a2722;
-            margin: 0.1rem 0.1rem;
-            white-space: nowrap;
-        }
-
-        .results-table .option-badge .pct {
-            color: #8b1e2b;
-            font-weight: 600;
-        }
-
-        .results-table .total-cell {
-            font-weight: 500;
-            color: #5e5a52;
-            font-size: 0.8rem;
-        }
-
-        .free-responses-section {
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 2px solid #e3ded5;
-        }
-
-        .free-responses-section h4 {
-            font-weight: 600;
-            font-size: 1rem;
-            color: #1e1e1e;
-            margin-bottom: 0.8rem;
-        }
-
-        .free-responses-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 0.6rem;
-        }
-
-        .free-response-item {
-            background: white;
-            padding: 0.6rem 0.9rem;
-            border-radius: 12px;
-            border: 1px solid #e8e4dc;
-            font-size: 0.9rem;
-            color: #2a2722;
-        }
-
-        .free-response-item .meta {
-            font-size: 0.75rem;
-            color: #8b1e2b;
-            font-weight: 500;
-            display: block;
-            margin-bottom: 0.2rem;
-        }
-
-        .stanford-context {
-            margin-top: 1.5rem;
-            padding-top: 1.2rem;
-            border-top: 2px solid #8b1e2b;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: #2a2722;
-        }
-
-        .stanford-context strong {
-            color: #8b1e2b;
-        }
-
-        .stanford-context .highlight {
-            background: #e8e2d7;
-            padding: 0.1rem 0.4rem;
-            border-radius: 12px;
-            font-weight: 500;
-        }
-
-        .class-selector-wrapper {
-            margin-bottom: 0.2rem;
-        }
-
-        .class-selector-wrapper label {
-            font-weight: 500;
-            color: #2a2722;
-            font-size: 0.95rem;
-            display: block;
-            margin-bottom: 0.3rem;
-        }
-
-        .debug-info {
-            background: #f5f3ee;
-            padding: 0.8rem 1.2rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            color: #5e5a52;
-            margin-top: 0.5rem;
-            display: none;
-            font-family: monospace;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
+        .results-panel h3 { font-weight: 600; font-size: 1.2rem; color: #1e1e1e; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 8px; }
+        .badge-icon { background: #8b1e2b10; padding: 0.1rem 0.6rem; border-radius: 30px; color: #8b1e2b; font-size: 0.75rem; font-weight: 500; }
+        .result-empty { color: #6b655b; font-style: italic; padding: 0.6rem 0; }
+        .footnote { margin-top: 1rem; font-size: 0.8rem; color: #6b655b; background: #f4f1eb; padding: 0.2rem 1.2rem; border-radius: 60px; display: inline-block; }
+        .results-table-wrapper { overflow-x: auto; margin-bottom: 2rem; }
+        .results-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .results-table thead { background: #8b1e2b; color: white; }
+        .results-table th { padding: 0.7rem 0.5rem; text-align: center; font-weight: 600; font-size: 0.8rem; border-right: 1px solid rgba(255,255,255,0.2); min-width: 80px; }
+        .results-table th:last-child { border-right: none; }
+        .results-table td { padding: 0.5rem 0.4rem; text-align: center; border-bottom: 1px solid #e8e4dc; vertical-align: middle; }
+        .results-table tbody tr:hover { background: #f5f3ee; }
+        .results-table .class-cell { font-weight: 600; color: #1e1e1e; background: #f5f3ee; text-align: center; padding: 0.5rem 0.6rem; white-space: nowrap; }
+        .results-table .question-cell { padding: 0.3rem 0.2rem; }
+        .results-table .option-badge { display: inline-block; background: #f0ede6; padding: 0.1rem 0.4rem; border-radius: 10px; font-size: 0.7rem; color: #2a2722; margin: 0.1rem 0.1rem; white-space: nowrap; }
+        .results-table .option-badge .pct { color: #8b1e2b; font-weight: 600; }
+        .results-table .total-cell { font-weight: 500; color: #5e5a52; font-size: 0.8rem; }
+        .free-responses-section { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid #e3ded5; }
+        .free-responses-section h4 { font-weight: 600; font-size: 1rem; color: #1e1e1e; margin-bottom: 0.8rem; }
+        .free-responses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.6rem; }
+        .free-response-item { background: white; padding: 0.6rem 0.9rem; border-radius: 12px; border: 1px solid #e8e4dc; font-size: 0.9rem; color: #2a2722; }
+        .free-response-item .meta { font-size: 0.75rem; color: #8b1e2b; font-weight: 500; display: block; margin-bottom: 0.2rem; }
+        .stanford-context { margin-top: 1.5rem; padding-top: 1.2rem; border-top: 2px solid #8b1e2b; font-size: 0.95rem; line-height: 1.6; color: #2a2722; }
+        .stanford-context strong { color: #8b1e2b; }
+        .stanford-context .highlight { background: #e8e2d7; padding: 0.1rem 0.4rem; border-radius: 12px; font-weight: 500; }
+        .class-selector-wrapper { margin-bottom: 0.2rem; }
+        .class-selector-wrapper label { font-weight: 500; color: #2a2722; font-size: 0.95rem; display: block; margin-bottom: 0.3rem; }
+        .debug-info { background: #f5f3ee; padding: 0.8rem 1.2rem; border-radius: 12px; font-size: 0.75rem; color: #5e5a52; margin-top: 0.5rem; display: none; font-family: monospace; white-space: pre-wrap; word-break: break-all; max-height: 200px; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -585,20 +171,11 @@
         
         <div id="debugInfo" class="debug-info"></div>
         
-        <!-- Stanford context appears only after results are shown -->
         <div id="stanfordContext" class="stanford-context" style="display: none;">
             <p><strong>📊 Stanford AI Index Report</strong></p>
-            <p>
-                <span class="highlight">84%</span> of Chinese respondents are excited about AI 
-                (highest globally), compared to <span class="highlight">38%</span> in the US.
-            </p>
-            <p style="margin-top: 0.5rem;">
-                Additionally, <span class="highlight">72%</span> in China trust AI, 
-                vs. <span class="highlight">32%</span> in the US.
-            </p>
-            <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #5e5a52;">
-                Source: Stanford University Human-Centered AI Institute · AI Index Report
-            </p>
+            <p><span class="highlight">84%</span> of Chinese respondents are excited about AI (highest globally), compared to <span class="highlight">38%</span> in the US.</p>
+            <p style="margin-top: 0.5rem;">Additionally, <span class="highlight">72%</span> in China trust AI, vs. <span class="highlight">32%</span> in the US.</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #5e5a52;">Source: Stanford University Human-Centered AI Institute · AI Index Report</p>
         </div>
         
         <div class="footnote" style="margin-top:1rem;">Data from Google Sheets · Auto-updated</div>
@@ -607,10 +184,8 @@
 
 <script>
     (function() {
-        // Google Apps Script Web App URL
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQPd_Hxwzz60vAJTEqmlCOiqjTSZYSAliu2LQnezH39SYoPreB_2EmkXsWMEr2aNK-/exec';
 
-        // DOM elements
         const form = document.getElementById('surveyForm');
         const submitBtn = document.getElementById('submitBtn');
         const showResultsBtn = document.getElementById('showResultsBtn');
@@ -621,13 +196,9 @@
         const debugInfo = document.getElementById('debugInfo');
         const classSelect = document.getElementById('classSelect');
 
-        // Timestamp
         const tsField = document.getElementById('timestampField');
-        if (tsField) {
-            tsField.value = new Date().toLocaleString('en-US', { hour12: false });
-        }
+        if (tsField) tsField.value = new Date().toLocaleString('en-US', { hour12: false });
 
-        // Toast
         function showToast(msg, isError = false) {
             toast.textContent = msg;
             toast.className = 'toast-message show' + (isError ? ' error' : '');
@@ -635,7 +206,6 @@
             window.toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 5000);
         }
 
-        // Helpers
         function getRadioValue(name) {
             const el = document.querySelector(`input[name="${name}"]:checked`);
             return el ? el.value : '';
@@ -646,7 +216,6 @@
             return Array.from(checked).map(el => el.value);
         }
 
-        // Submit Survey
         window.handleSubmit = function(event) {
             event.preventDefault();
 
@@ -655,28 +224,12 @@
             const q2 = getRadioValue('q2_ai_excite');
             const q3 = getRadioValue('q3_ai_trust');
             
-            if (!className) {
-                showToast('Please select your course from the dropdown.', true);
-                return false;
-            }
-            if (!q1 || !q2 || !q3) {
-                showToast('Please answer all single-choice questions (Q1, Q2, Q3).', true);
-                return false;
-            }
+            if (!className) { showToast('Please select your course from the dropdown.', true); return false; }
+            if (!q1 || !q2 || !q3) { showToast('Please answer all single-choice questions (Q1, Q2, Q3).', true); return false; }
 
             const q4 = document.querySelector('textarea[name="q4_expectation"]')?.value || '';
             const q5 = getCheckboxValues('q5_style').join('; ') || '(none selected)';
             const timestamp = tsField?.value || new Date().toLocaleString('en-US', { hour12: false });
-
-            const formData = {
-                timestamp: timestamp,
-                class: className,
-                q1_grade_skill: q1,
-                q2_ai_excite: q2,
-                q3_ai_trust: q3,
-                q4_expectation: q4,
-                q5_style: q5
-            };
 
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="loading-spinner"></span> Submitting...';
@@ -686,45 +239,32 @@
                 mode: 'no-cors',
                 cache: 'no-cache',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({ timestamp, class: className, q1_grade_skill: q1, q2_ai_excite: q2, q3_ai_trust: q3, q4_expectation: q4, q5_style: q5 })
             })
             .then(() => {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = 'Submit Survey';
-                showToast('Successfully submitted to Google Sheets!');
-                submitBtn.style.transform = 'scale(0.97)';
-                setTimeout(() => submitBtn.style.transform = '', 200);
+                showToast('Successfully submitted!');
             })
             .catch(err => {
                 console.error(err);
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = 'Submit Survey';
-                showToast('Submission failed. Please check your network.', true);
+                showToast('Submission failed. Please try again.', true);
             });
 
             return false;
         };
 
-        // Fetch & Render Results
         async function fetchResults() {
             showResultsBtn.disabled = true;
             showResultsBtn.innerHTML = '<span class="loading-spinner"></span> Loading...';
 
             try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'GET',
-                    mode: 'cors',
-                    cache: 'no-cache',
-                    headers: { 'Accept': 'application/json' }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
+                const response = await fetch(SCRIPT_URL, { method: 'GET', mode: 'cors', cache: 'no-cache', headers: { 'Accept': 'application/json' } });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 
-                // Show debug info
                 debugInfo.style.display = 'block';
                 debugInfo.textContent = 'Raw data: ' + JSON.stringify(data, null, 2);
                 
@@ -736,7 +276,7 @@
                 console.error('Failed to fetch results:', err);
                 showToast('Unable to load results. Check Apps Script deployment.', true);
                 resultsPanel.classList.add('visible');
-                resultsContent.innerHTML = `<div class="result-empty">Load failed: ${err.message}. Make sure the Web App is deployed with "Anyone" access and the URL is correct.</div>`;
+                resultsContent.innerHTML = `<div class="result-empty">Load failed: ${err.message}</div>`;
                 debugInfo.style.display = 'block';
                 debugInfo.textContent = 'Error: ' + err.message;
             } finally {
@@ -745,10 +285,9 @@
             }
         }
 
-        // Render Results as Table
         function renderResults(data) {
             if (!data || data.error) {
-                resultsContent.innerHTML = `<div class="result-empty">${data?.error || 'No data available. Please submit surveys first.'}</div>`;
+                resultsContent.innerHTML = `<div class="result-empty">${data?.error || 'No data available.'}</div>`;
                 return;
             }
 
@@ -757,79 +296,40 @@
                 return;
             }
 
-            let html = '';
+            let html = '<div class="results-table-wrapper"><table class="results-table"><thead><tr><th>Course</th>';
+            if (data.questions) data.questions.forEach(q => { html += `<th>${q.label}</th>`; });
+            html += '<th>Total</th></tr></thead><tbody>';
 
-            // Build the table
-            html += `<div class="results-table-wrapper"><table class="results-table">`;
-            
-            // Table header
-            html += `<thead><tr><th>Course</th>`;
-            if (data.questions && data.questions.length > 0) {
-                data.questions.forEach(q => {
-                    html += `<th>${q.label}</th>`;
-                });
-            }
-            html += `<th>Total</th></tr></thead>`;
-            
-            // Table body
-            html += `<tbody>`;
             data.tableData.forEach(row => {
-                html += `<tr>`;
-                html += `<td class="class-cell">${row.class || 'Unspecified'}</td>`;
-                
+                html += `<tr><td class="class-cell">${row.class || 'Unspecified'}</td>`;
                 if (data.questions) {
                     data.questions.forEach(q => {
                         const qData = row[q.id];
-                        if (!qData || typeof qData !== 'object') {
-                            html += `<td class="question-cell">—</td>`;
-                            return;
-                        }
-                        
-                        // Build option badges
-                        const options = Object.keys(qData);
+                        if (!qData || typeof qData !== 'object') { html += `<td class="question-cell">—</td>`; return; }
                         let cellHtml = '';
-                        if (options.length === 0) {
-                            cellHtml = '—';
-                        } else {
-                            options.forEach(opt => {
-                                const pct = qData[opt];
-                                if (pct > 0) {
-                                    cellHtml += `<span class="option-badge">${opt} <span class="pct">${pct}%</span></span>`;
-                                }
-                            });
-                        }
+                        Object.keys(qData).forEach(opt => {
+                            if (qData[opt] > 0) cellHtml += `<span class="option-badge">${opt} <span class="pct">${qData[opt]}%</span></span>`;
+                        });
                         html += `<td class="question-cell">${cellHtml || '—'}</td>`;
                     });
                 }
-                
-                html += `<td class="total-cell">${row.total || 0}</td>`;
-                html += `</tr>`;
+                html += `<td class="total-cell">${row.total || 0}</td></tr>`;
             });
-            html += `</tbody></table></div>`;
-            
-            // Free responses section
-            if (data.freeResponses && data.freeResponses.length > 0) {
-                html += `<div class="free-responses-section">`;
-                html += `<h4>📝 Free Responses (Q4: What do you hope to gain from this course?)</h4>`;
-                html += `<div class="free-responses-grid">`;
-                data.freeResponses.forEach(item => {
-                    html += `<div class="free-response-item">`;
-                    html += `<span class="meta">${item.class || 'Unspecified'}</span>`;
-                    html += `<span>${item.response}</span>`;
-                    html += `</div>`;
-                });
-                html += `</div></div>`;
-            }
-            
-            // Total responses
-            html += `<div style="margin-top: 1rem; font-size: 0.9rem; color: #5e5a52;">`;
-            html += `<strong>Total Responses:</strong> ${data.totalResponses || 0}`;
-            html += `</div>`;
 
+            html += '</tbody></table></div>';
+
+            if (data.freeResponses && data.freeResponses.length > 0) {
+                html += `<div class="free-responses-section"><h4>📝 Free Responses (Q4)</h4><div class="free-responses-grid">`;
+                data.freeResponses.forEach(item => {
+                    html += `<div class="free-response-item"><span class="meta">${item.class || 'Unspecified'}</span><span>${item.response}</span></div>`;
+                });
+                html += '</div></div>';
+            }
+
+            html += `<div style="margin-top: 1rem; font-size: 0.9rem; color: #5e5a52;"><strong>Total Responses:</strong> ${data.totalResponses || 0}</div>`;
             resultsContent.innerHTML = html;
         }
 
-        // Bind Events
         showResultsBtn.addEventListener('click', fetchResults);
     })();
 </script>
