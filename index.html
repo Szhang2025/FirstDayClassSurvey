@@ -140,7 +140,6 @@
             padding: 2px 0;
         }
 
-        /* Dropdown styling */
         .dropdown-select {
             width: 100%;
             padding: 0.7rem 1.2rem;
@@ -325,7 +324,6 @@
             display: inline-block;
         }
 
-        /* Table Styles */
         .results-table-wrapper {
             overflow-x: auto;
             margin-bottom: 2rem;
@@ -405,7 +403,6 @@
             font-size: 0.8rem;
         }
 
-        /* Free Responses */
         .free-responses-section {
             margin-top: 1.5rem;
             padding-top: 1.5rem;
@@ -472,6 +469,19 @@
             font-size: 0.95rem;
             display: block;
             margin-bottom: 0.3rem;
+        }
+
+        .debug-info {
+            background: #f5f3ee;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: #5e5a52;
+            margin-top: 0.5rem;
+            display: none;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
         }
     </style>
 </head>
@@ -573,6 +583,8 @@
             <div class="result-empty">Click "View Survey Results" to load data.</div>
         </div>
         
+        <div id="debugInfo" class="debug-info"></div>
+        
         <!-- Stanford context appears only after results are shown -->
         <div id="stanfordContext" class="stanford-context" style="display: none;">
             <p><strong>📊 Stanford AI Index Report</strong></p>
@@ -606,6 +618,7 @@
         const resultsPanel = document.getElementById('resultsPanel');
         const resultsContent = document.getElementById('resultsContent');
         const stanfordContext = document.getElementById('stanfordContext');
+        const debugInfo = document.getElementById('debugInfo');
         const classSelect = document.getElementById('classSelect');
 
         // Timestamp
@@ -710,6 +723,11 @@
                 }
 
                 const data = await response.json();
+                
+                // Show debug info
+                debugInfo.style.display = 'block';
+                debugInfo.textContent = 'Raw data: ' + JSON.stringify(data, null, 2);
+                
                 renderResults(data);
                 resultsPanel.classList.add('visible');
                 stanfordContext.style.display = 'block';
@@ -719,6 +737,8 @@
                 showToast('Unable to load results. Check Apps Script deployment.', true);
                 resultsPanel.classList.add('visible');
                 resultsContent.innerHTML = `<div class="result-empty">Load failed: ${err.message}. Make sure the Web App is deployed with "Anyone" access and the URL is correct.</div>`;
+                debugInfo.style.display = 'block';
+                debugInfo.textContent = 'Error: ' + err.message;
             } finally {
                 showResultsBtn.disabled = false;
                 showResultsBtn.innerHTML = 'View Survey Results';
@@ -744,37 +764,45 @@
             
             // Table header
             html += `<thead><tr><th>Course</th>`;
-            data.questions.forEach(q => {
-                html += `<th>${q.label}</th>`;
-            });
+            if (data.questions && data.questions.length > 0) {
+                data.questions.forEach(q => {
+                    html += `<th>${q.label}</th>`;
+                });
+            }
             html += `<th>Total</th></tr></thead>`;
             
             // Table body
             html += `<tbody>`;
             data.tableData.forEach(row => {
                 html += `<tr>`;
-                html += `<td class="class-cell">${row.class}</td>`;
+                html += `<td class="class-cell">${row.class || 'Unspecified'}</td>`;
                 
-                data.questions.forEach(q => {
-                    const qData = row[q.id];
-                    if (!qData || typeof qData !== 'object') {
-                        html += `<td class="question-cell">—</td>`;
-                        return;
-                    }
-                    
-                    // Build option badges
-                    const options = Object.keys(qData);
-                    let cellHtml = '';
-                    options.forEach(opt => {
-                        const pct = qData[opt];
-                        if (pct > 0) {
-                            cellHtml += `<span class="option-badge">${opt} <span class="pct">${pct}%</span></span>`;
+                if (data.questions) {
+                    data.questions.forEach(q => {
+                        const qData = row[q.id];
+                        if (!qData || typeof qData !== 'object') {
+                            html += `<td class="question-cell">—</td>`;
+                            return;
                         }
+                        
+                        // Build option badges
+                        const options = Object.keys(qData);
+                        let cellHtml = '';
+                        if (options.length === 0) {
+                            cellHtml = '—';
+                        } else {
+                            options.forEach(opt => {
+                                const pct = qData[opt];
+                                if (pct > 0) {
+                                    cellHtml += `<span class="option-badge">${opt} <span class="pct">${pct}%</span></span>`;
+                                }
+                            });
+                        }
+                        html += `<td class="question-cell">${cellHtml || '—'}</td>`;
                     });
-                    html += `<td class="question-cell">${cellHtml || '—'}</td>`;
-                });
+                }
                 
-                html += `<td class="total-cell">${row.total}</td>`;
+                html += `<td class="total-cell">${row.total || 0}</td>`;
                 html += `</tr>`;
             });
             html += `</tbody></table></div>`;
@@ -786,7 +814,7 @@
                 html += `<div class="free-responses-grid">`;
                 data.freeResponses.forEach(item => {
                     html += `<div class="free-response-item">`;
-                    html += `<span class="meta">${item.class}</span>`;
+                    html += `<span class="meta">${item.class || 'Unspecified'}</span>`;
                     html += `<span>${item.response}</span>`;
                     html += `</div>`;
                 });
