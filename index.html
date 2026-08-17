@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>First Day · Class Survey (with Results)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: #f7f5f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .survey-card {
+            max-width: 880px;
+            width: 100%;
+            background: white;
+            border-radius: 40px;
+            padding: 2.8rem 2.8rem 2.5rem;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15), 0 8px 24px -6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f0ede6;
+        }
+
+        @media (max-width: 550px) {
+            .survey-card { padding: 1.8rem 1.2rem; }
+        }
+
+        .header {
+            border-bottom: 3px solid #8b1e2b;
+            padding-bottom: 1.4rem;
+            margin-bottom: 1.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: #1e1e1e;
+            line-height: 1.2;
+        }
+
+        .header h1 span {
+            background: #8b1e2b;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.1rem 0.7rem;
+            border-radius: 40px;
+            margin-left: 10px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .header .sub {
+            color: #5e5a52;
+            font-size: 0.95rem;
+            background: #f0ede6;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            margin-top: 0.3rem;
+        }
+
+        .intro {
+            background: #faf8f4;
+            padding: 1.2rem 1.6rem;
+            border-radius: 24px;
+            margin-bottom: 2rem;
+            border-left: 6px solid #8b1e2b;
+            font-size: 0.98rem;
+            line-height: 1.6;
+            color: #2a2722;
+        }
+
+        .intro strong { color: #8b1e2b; }
+        .intro .stat-highlight {
+            background: #e8e2d7;
+            padding: 0.1rem 0.4rem;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .question-block {
+            margin-bottom: 2.2rem;
+        }
+
+        .q-title {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #1e1e1e;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            margin-bottom: 0.6rem;
+        }
+
+        .q-title .q-num {
+            background: #8b1e2b;
+            color: white;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.1rem 0.65rem;
+            margin-right: 4px;
+        }
+
+        .q-desc {
+            font-size: 0.92rem;
+            color: #3d3a33;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem 1.4rem;
+            margin-top: 0.4rem;
+            background: #fbfaf8;
+            padding: 0.7rem 1.2rem 0.5rem 1.2rem;
+            border-radius: 24px;
+            border: 1px solid #ece8e0;
+        }
+
+        .options-grid.vertical {
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 0.15rem 0.2rem;
+            border-radius: 40px;
+            padding-right: 12px;
+            transition: background 0.1s;
+        }
+
+        .option-item:hover { background: #f0ede6; }
+
+        .option-item input[type="radio"],
+        .option-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #8b1e2b;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .option-item label {
+            font-size: 0.97rem;
+            color: #1f1d1a;
+            cursor: pointer;
+            padding: 2px 0;
+        }
+
+        .text-input {
+            margin-top: 0.5rem;
+            width: 100%;
+            padding: 0.7rem 1.2rem;
+            border: 1px solid #d6d0c4;
+            border-radius: 40px;
+            background: white;
+            font-size: 0.95rem;
+            transition: 0.15s;
+            outline: none;
+            resize: vertical;
+            min-height: 56px;
+            font-family: inherit;
+        }
+
+        .text-input:focus {
+            border-color: #8b1e2b;
+            box-shadow: 0 0 0 3px rgba(139, 30, 43, 0.15);
+        }
+
+        .text-input-short { min-height: 48px; }
+
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 1.2rem 2rem;
+            margin: 1.8rem 0 1.2rem;
+            border-top: 1px solid #e3ded5;
+            padding-top: 2rem;
+        }
+
+        .btn {
+            border: none;
+            padding: 0.7rem 2.2rem;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+        }
+
+        .btn-primary {
+            background: #8b1e2b;
+            color: white;
+            border: 1px solid #701a24;
+            box-shadow: 0 6px 14px rgba(139, 30, 43, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: #701a24;
+            transform: scale(1.01);
+            box-shadow: 0 10px 20px rgba(139, 30, 43, 0.25);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #e8e2d7;
+            color: #2a2722;
+            border: 1px solid #ccc6b8;
+        }
+
+        .btn-secondary:hover {
+            background: #ddd6c9;
+            transform: scale(1.01);
+        }
+
+        .btn-secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .toast-message {
+            margin-top: 0.6rem;
+            background: #e2f0e6;
+            padding: 0.4rem 1.6rem;
+            border-radius: 60px;
+            color: #1a4a2e;
+            font-weight: 450;
+            display: inline-block;
+            opacity: 0;
+            transition: opacity 0.25s;
+            border: 1px solid #b8d5c2;
+        }
+
+        .toast-message.show { opacity: 1; }
+        .toast-message.error {
+            background: #f8e3e0;
+            color: #8b1e2b;
+            border-color: #dbb8b0;
+        }
+
+        .inline-highlight {
+            background: #f1ede4;
+            padding: 0.1rem 0.5rem;
+            border-radius: 20px;
+            font-weight: 500;
+            color: #3d2f1f;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s ease-in-out infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .results-panel {
+            margin-top: 2rem;
+            background: #faf8f4;
+            border-radius: 28px;
+            padding: 1.6rem 1.8rem 1.8rem;
+            border: 1px solid #e3ded5;
+            display: none;
+        }
+
+        .results-panel.visible { display: block; }
+
+        .results-panel h3 {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #1e1e1e;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-item {
+            margin-bottom: 1.4rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px dashed #d9d2c5;
+        }
+
+        .result-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+        .result-item .rq {
+            font-weight: 600;
+            color: #2f2b24;
+            font-size: 0.98rem;
+            margin-bottom: 4px;
+        }
+
+        .result-item .rq small {
+            font-weight: 400;
+            color: #6b655b;
+            font-size: 0.8rem;
+            margin-left: 6px;
+        }
+
+        .result-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem 1.2rem;
+            padding: 0.3rem 0.2rem;
+        }
+
+        .stat-badge {
+            background: white;
+            border-radius: 40px;
+            padding: 0.2rem 0.9rem;
+            border: 1px solid #d6d0c4;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-badge .label { color: #4a453d; }
+        .stat-badge .value { font-weight: 600; color: #1e1e1e; }
+        .stat-badge .count { color: #8b1e2b; font-weight: 500; }
+
+        .result-empty {
+            color: #6b655b;
+            font-style: italic;
+            padding: 0.6rem 0;
+        }
+
+        .footnote {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: #6b655b;
+            background: #f4f1eb;
+            padding: 0.2rem 1.2rem;
+            border-radius: 60px;
+            display: inline-block;
+        }
+
+        .badge-icon {
+            background: #8b1e2b10;
+            padding: 0.1rem 0.6rem;
+            border-radius: 30px;
+            color: #8b1e2b;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<div class="survey-card">
+    <div class="header">
+        <h1>🎓 First Day · Survey <span>CS 101</span></h1>
+        <div class="sub">Stanford · Spring 2026</div>
+    </div>
+
+    <div class="intro">
+        <p style="margin-bottom: 6px;">
+            <strong>📊 Stanford AI Index Report</strong> · 84% of Chinese respondents are excited about AI 
+            <span class="stat-highlight">(highest globally)</span>, compared to 38% in the US. 
+            Additionally, <strong>72%</strong> in China trust AI, vs. 32% in the US.
+        </p>
+        <p style="margin-top: 8px; font-size:0.95rem;">
+            Complete the survey and click <strong>"View Survey Results"</strong> to see real-time class statistics.
+        </p>
+    </div>
+
+    <!-- Survey Form -->
+    <form id="surveyForm" onsubmit="return handleSubmit(event)">
+        <!-- Q1 -->
+        <div class="question-block">
+            <div class="q-title"><span class="q-num">1</span> Grade vs. Knowledge/Skills <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(单选)</span></div>
+            <div class="q-desc"><span class="inline-highlight">🤔 What matters more?</span> In this course, which do you value more?</div>
+            <div class="options-grid">
+                <div class="option-item"><input type="radio" name="q1_grade_skill" value="Grade (GPA)" /> <label>📝 Grade (GPA)</label></div>
+                <div class="option-item"><input type="radio" name="q1_grade_skill" value="Knowledge/Skills" /> <label>🧠 Knowledge / Skills</label></div>
+                <div class="option-item"><input type="radio" name="q1_grade_skill" value="Both equally" /> <label>⚖️ Both equally</label></div>
+            </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="question-block">
+            <div class="q-title"><span class="q-num">2</span> How excited are you about AI? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(单选)</span></div>
+            <div class="q-desc"><span class="inline-highlight">🚀 Reference: China 84% excited · US 38%</span> How do you feel about AI?</div>
+            <div class="options-grid">
+                <div class="option-item"><input type="radio" name="q2_ai_excite" value="Very excited" /> <label>😃 Very excited</label></div>
+                <div class="option-item"><input type="radio" name="q2_ai_excite" value="Neutral" /> <label>😐 Neutral</label></div>
+                <div class="option-item"><input type="radio" name="q2_ai_excite" value="Skeptical" /> <label>🤨 Skeptical</label></div>
+            </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="question-block">
+            <div class="q-title"><span class="q-num">3</span> How much do you trust AI? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(单选)</span></div>
+            <div class="q-desc"><span class="inline-highlight">🔐 Reference: China 72% trust · US 32%</span> Do you trust AI systems/tools?</div>
+            <div class="options-grid">
+                <div class="option-item"><input type="radio" name="q3_ai_trust" value="Trust" /> <label>✅ Trust</label></div>
+                <div class="option-item"><input type="radio" name="q3_ai_trust" value="Neutral" /> <label>⚖️ Neutral</label></div>
+                <div class="option-item"><input type="radio" name="q3_ai_trust" value="Distrust" /> <label>❌ Distrust</label></div>
+            </div>
+        </div>
+
+        <!-- Q4 Open-ended -->
+        <div class="question-block">
+            <div class="q-title"><span class="q-num">4</span> What do you hope to gain from this course? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(short answer)</span></div>
+            <div class="q-desc"><span class="inline-highlight">💡 Personal goals</span> Skills, mindset, projects, connections…</div>
+            <textarea class="text-input text-input-short" name="q4_expectation" placeholder="e.g., I want to master Python data analysis and complete a capstone project."></textarea>
+        </div>
+
+        <!-- Q5 Multi-select -->
+        <div class="question-block">
+            <div class="q-title"><span class="q-num">5</span> What should the course focus on? <span style="font-weight:400; font-size:0.8rem; margin-left:6px; color:#5a554b;">(select all that apply)</span></div>
+            <div class="q-desc"><span class="inline-highlight">🎯 Teaching style</span> Choose 1–3 that matter most to you.</div>
+            <div class="options-grid vertical" style="gap: 0.2rem;">
+                <div class="option-item"><input type="checkbox" name="q5_style" value="Theoretical depth" /> <label>📚 Theoretical depth</label></div>
+                <div class="option-item"><input type="checkbox" name="q5_style" value="Hands-on projects" /> <label>🛠️ Hands-on projects</label></div>
+                <div class="option-item"><input type="checkbox" name="q5_style" value="Class interaction" /> <label>🗣️ Class interaction/discussion</label></div>
+                <div class="option-item"><input type="checkbox" name="q5_style" value="Cutting-edge cases" /> <label>🚀 Cutting-edge cases (AI/Data Science)</label></div>
+                <div class="option-item"><input type="checkbox" name="q5_style" value="Career development" /> <label>💼 Career development / industry links</label></div>
+            </div>
+        </div>
+
+        <input type="hidden" name="timestamp" id="timestampField" value="" />
+
+        <!-- Buttons -->
+        <div class="action-bar">
+            <button type="submit" class="btn btn-primary" id="submitBtn">📤 Submit Survey</button>
+            <button type="button" class="btn btn-secondary" id="showResultsBtn">📊 View Survey Results</button>
+        </div>
+
+        <div id="toastMessage" class="toast-message">✅ Successfully submitted to Google Sheets!</div>
+    </form>
+
+    <!-- Results Panel -->
+    <div id="resultsPanel" class="results-panel">
+        <h3>📊 Class Survey Results <span class="badge-icon">Live</span></h3>
+        <div id="resultsContent">
+            <div class="result-empty">Click "View Survey Results" to load data…</div>
+        </div>
+        <div class="footnote" style="margin-top:1rem;">Data from Google Sheets · Auto-updated</div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---------- CONFIG ----------
+        // Replace with your Google Apps Script Web App URL (supports POST for submit, GET for results)
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQPd_Hxwzz60vAJTEqmlCOiqjTSZYSAliu2LQnezH39SYoPreB_2EmkXsWMEr2aNK-/exec';
+
+        // DOM elements
+        const form = document.getElementById('surveyForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const showResultsBtn = document.getElementById('showResultsBtn');
+        const toast = document.getElementById('toastMessage');
+        const resultsPanel = document.getElementById('resultsPanel');
+        const resultsContent = document.getElementById('resultsContent');
+
+        // Timestamp
+        const tsField = document.getElementById('timestampField');
+        if (tsField) {
+            tsField.value = new Date().toLocaleString('en-US', { hour12: false });
+        }
+
+        // ---------- Toast ----------
+        function showToast(msg, isError = false) {
+            toast.textContent = msg;
+            toast.className = 'toast-message show' + (isError ? ' error' : '');
+            clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 5000);
+        }
+
+        // ---------- Helpers ----------
+        function getRadioValue(name) {
+            const el = document.querySelector(`input[name="${name}"]:checked`);
+            return el ? el.value : '';
+        }
+
+        function getCheckboxValues(name) {
+            const checked = document.querySelectorAll(`input[name="${name}"]:checked`);
+            return Array.from(checked).map(el => el.value);
+        }
+
+        // ---------- Submit Survey ----------
+        window.handleSubmit = function(event) {
+            event.preventDefault();
+
+            const q1 = getRadioValue('q1_grade_skill');
+            const q2 = getRadioValue('q2_ai_excite');
+            const q3 = getRadioValue('q3_ai_trust');
+            if (!q1 || !q2 || !q3) {
+                showToast('⚠️ Please answer all single-choice questions (Q1, Q2, Q3) before submitting.', true);
+                return false;
+            }
+
+            const q4 = document.querySelector('textarea[name="q4_expectation"]')?.value || '';
+            const q5 = getCheckboxValues('q5_style').join('; ') || '(none selected)';
+            const timestamp = tsField?.value || new Date().toLocaleString('en-US', { hour12: false });
+
+            const formData = {
+                timestamp: timestamp,
+                q1_grade_skill: q1,
+                q2_ai_excite: q2,
+                q3_ai_trust: q3,
+                q4_expectation: q4,
+                q5_style: q5
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading-spinner"></span> Submitting...';
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '📤 Submit Survey';
+                showToast('✅ Successfully submitted to Google Sheets!');
+                submitBtn.style.transform = 'scale(0.97)';
+                setTimeout(() => submitBtn.style.transform = '', 200);
+            })
+            .catch(err => {
+                console.error(err);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '📤 Submit Survey';
+                showToast('⚠️ Submission failed. Please check your network or contact TA.', true);
+            });
+
+            return false;
+        };
+
+        // ---------- Fetch & Render Results ----------
+        async function fetchResults() {
+            showResultsBtn.disabled = true;
+            showResultsBtn.innerHTML = '<span class="loading-spinner"></span> Loading...';
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'GET',
+                    cache: 'no-cache',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                renderResults(data);
+                resultsPanel.classList.add('visible');
+                showToast('📊 Results updated');
+            } catch (err) {
+                console.error('Failed to fetch results:', err);
+                showToast('⚠️ Unable to load results. Check Apps Script deployment and return JSON.', true);
+                resultsPanel.classList.add('visible');
+                resultsContent.innerHTML = `<div class="result-empty">⚠️ Load failed: ${err.message}. Check console or contact TA.</div>`;
+            } finally {
+                showResultsBtn.disabled = false;
+                showResultsBtn.innerHTML = '📊 View Survey Results';
+            }
+        }
+
+        // ---------- Render Results ----------
+        function renderResults(data) {
+            if (!data || typeof data !== 'object') {
+                resultsContent.innerHTML = `<div class="result-empty">No data available. Please submit surveys first.</div>`;
+                return;
+            }
+
+            const qLabels = {
+                q1: '1. Grade vs. Knowledge/Skills',
+                q2: '2. Excitement about AI',
+                q3: '3. Trust in AI',
+                q4: '4. Course Expectations (keywords)',
+                q5: '5. Preferred Course Focus (multi-select)'
+            };
+
+            let html = '';
+
+            // Q1~Q3 (single-choice)
+            ['q1', 'q2', 'q3'].forEach(key => {
+                const qData = data[key];
+                if (!qData || typeof qData !== 'object' || Object.keys(qData).length === 0) {
+                    html += `<div class="result-item"><div class="rq">${qLabels[key]}</div><div class="result-empty">No data yet</div></div>`;
+                    return;
+                }
+                const sorted = Object.entries(qData).sort((a, b) => b[1] - a[1]);
+                const total = sorted.reduce((sum, [, count]) => sum + count, 0);
+                let statsHtml = '';
+                sorted.forEach(([label, count]) => {
+                    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                    statsHtml += `<span class="stat-badge"><span class="label">${label}</span> <span class="count">${count}</span> <span style="color:#5a554b;font-size:0.8rem;">(${pct}%)</span></span>`;
+                });
+                html += `<div class="result-item">
+                            <div class="rq">${qLabels[key]} <small>Total: ${total} responses</small></div>
+                            <div class="result-stats">${statsHtml}</div>
+                        </div>`;
+            });
+
+            // Q4: extract keywords (top 8)
+            const q4Data = data.q4 || [];
+            if (Array.isArray(q4Data) && q4Data.length > 0) {
+                const wordCount = {};
+                q4Data.forEach(text => {
+                    if (!text) return;
+                    const words = text.split(/[\s,，、。.！!;；：:]+/).filter(w => w.length > 1);
+                    words.forEach(w => {
+                        const key = w.toLowerCase();
+                        wordCount[key] = (wordCount[key] || 0) + 1;
+                    });
+                });
+                const sortedWords = Object.entries(wordCount).sort((a, b) => b[1] - a[1]).slice(0, 8);
+                let wordHtml = '';
+                if (sortedWords.length > 0) {
+                    sortedWords.forEach(([word, count]) => {
+                        wordHtml += `<span class="stat-badge"><span class="label">${word}</span> <span class="count">${count}</span></span>`;
+                    });
+                } else {
+                    wordHtml = '<span class="result-empty">No keywords yet</span>';
+                }
+                html += `<div class="result-item">
+                            <div class="rq">${qLabels.q4} <small>${q4Data.length} responses</small></div>
+                            <div class="result-stats">${wordHtml}</div>
+                        </div>`;
+            } else {
+                html += `<div class="result-item"><div class="rq">${qLabels.q4}</div><div class="result-empty">No data yet</div></div>`;
+            }
+
+            // Q5: multi-select
+            const q5Data = data.q5 || {};
+            if (typeof q5Data === 'object' && Object.keys(q5Data).length > 0) {
+                const sorted = Object.entries(q5Data).sort((a, b) => b[1] - a[1]);
+                const total = sorted.reduce((sum, [, count]) => sum + count, 0);
+                let statsHtml = '';
+                sorted.forEach(([label, count]) => {
+                    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                    statsHtml += `<span class="stat-badge"><span class="label">${label}</span> <span class="count">${count}</span> <span style="color:#5a554b;font-size:0.8rem;">(${pct}%)</span></span>`;
+                });
+                html += `<div class="result-item">
+                            <div class="rq">${qLabels.q5} <small>Total votes: ${total}</small></div>
+                            <div class="result-stats">${statsHtml}</div>
+                        </div>`;
+            } else {
+                html += `<div class="result-item"><div class="rq">${qLabels.q5}</div><div class="result-empty">No data yet</div></div>`;
+            }
+
+            resultsContent.innerHTML = html;
+        }
+
+        // ---------- Bind Events ----------
+        showResultsBtn.addEventListener('click', fetchResults);
+
+        // Optionally auto-load results on page load (comment out if not desired)
+        // setTimeout(fetchResults, 600);
+    })();
+</script>
+
+<!--
+  INSTRUCTIONS:
+  1. Deploy a Google Apps Script with doPost(e) and doGet(e).
+  2. doGet(e) should read spreadsheet data, compute counts, and return JSON.
+  3. Replace SCRIPT_URL with your Web App URL.
+  4. This page supports both survey submission and results viewing.
+-->
+</body>
+</html>
