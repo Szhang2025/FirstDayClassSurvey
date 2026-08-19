@@ -499,6 +499,33 @@
             border-top: 1px solid #e3ded5;
         }
 
+        /* Variable distribution charts */
+        .charts-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e3ded5;
+        }
+        .charts-section h4 {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #1e1e1e;
+            margin-bottom: 0.9rem;
+        }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 0.6rem 0.6rem 0.4rem;
+            border: 1px solid #e8e4dc;
+        }
+        .chart-card svg {
+            display: block;
+        }
+
         /* Analysis Modal Styles */
         .modal-overlay {
             display: none;
@@ -1590,11 +1617,126 @@
                 }
                 html +=
                     `<div style="margin-top: 1rem; font-size: 0.9rem; color: #5e5a52;"><strong>Total Responses:</strong> ${data.totalResponses || 0}</div>`;
+                html += renderVariableChartsHTML();
                 resultsContent.innerHTML = html;
 
                 if (rawDataArray.length > 0) {
                     populateAnalysisDropdowns();
                 }
+            }
+
+            // ==================== VARIABLE DISTRIBUTION CHARTS (ignores class) ====================
+            function escapeXML(s) {
+                return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            }
+
+            function barSVG(labels, values, title) {
+                const width = 480, height = 260;
+                const padding = { top: 34, right: 16, bottom: 64, left: 40 };
+                const chartW = width - padding.left - padding.right;
+                const chartH = height - padding.top - padding.bottom;
+                const maxV = Math.max(...values, 1);
+                const n = values.length;
+                const slot = chartW / n;
+                const barW = Math.max(slot - 10, 4);
+                let svg = `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">`;
+                svg += `<rect width="${width}" height="${height}" fill="white"/>`;
+                svg += `<text x="${width/2}" y="20" text-anchor="middle" font-size="12" font-weight="600" fill="#1e1e1e">${escapeXML(title)}</text>`;
+                svg += `<line x1="${padding.left}" y1="${padding.top+chartH}" x2="${width-padding.right}" y2="${padding.top+chartH}" stroke="#ccc" stroke-width="1"/>`;
+                values.forEach((v, i) => {
+                    const barH = maxV > 0 ? (v / maxV) * chartH : 0;
+                    const x = padding.left + i * slot + (slot - barW) / 2;
+                    const y = padding.top + chartH - barH;
+                    svg += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${barH.toFixed(1)}" fill="#8b1e2b" opacity="0.85" rx="2"/>`;
+                    svg += `<text x="${(x+barW/2).toFixed(1)}" y="${(y-4).toFixed(1)}" text-anchor="middle" font-size="9" fill="#333">${v}</text>`;
+                    const lbl = String(labels[i]);
+                    const shortLbl = lbl.length > 12 ? lbl.slice(0, 11) + '…' : lbl;
+                    const lx = (x + barW / 2).toFixed(1), ly = (padding.top + chartH + 12).toFixed(1);
+                    svg += `<text x="${lx}" y="${ly}" text-anchor="end" font-size="8" fill="#5e5a52" transform="rotate(-40 ${lx} ${ly})">${escapeXML(shortLbl)}</text>`;
+                });
+                svg += `</svg>`;
+                return svg;
+            }
+
+            function histogramSVG(values, title) {
+                const unique = [...new Set(values)];
+                if (unique.length <= 10) {
+                    unique.sort((a, b) => a - b);
+                    const counts = unique.map(u => values.filter(v => v === u).length);
+                    return barSVG(unique.map(String), counts, title);
+                }
+                const min = Math.min(...values), max = Math.max(...values);
+                const bins = 7;
+                const binWidth = (max - min) / bins || 1;
+                const labels = [], counts = new Array(bins).fill(0);
+                for (let i = 0; i < bins; i++) {
+                    const lo = min + i * binWidth, hi = i === bins - 1 ? max : min + (i + 1) * binWidth;
+                    labels.push(`${lo.toFixed(0)}–${hi.toFixed(0)}`);
+                }
+                values.forEach(v => {
+                    let idx = binWidth === 0 ? 0 : Math.floor((v - min) / binWidth);
+                    if (idx >= bins) idx = bins - 1;
+                    counts[idx]++;
+                });
+                return barSVG(labels, counts, title);
+            }
+
+            function renderVariableChartsHTML() {
+                if (rawDataArray.length === 0) return '';
+
+                // 'class' is intentionally excluded — these charts pool every
+                // response together regardless of course.
+                const numericVars = ['q1_height', 'q3_study_hours', 'q4_screen_time', 'q5_exercise_hours',
+                    'q7_pets', 'q8_phone_minutes', 'q11_stuffed_animals', 'q14_random_number'
+                ];
+                const categoricalVars = ['q2_gender', 'q6_happiness', 'q9_born_us', 'q10_movie',
+                    'q12_other_institution', 'q13_year', 'q15_value', 'q16_ai_excite', 'q17_ai_trust'
+                ];
+                const multiSelectVars = ['q19_emphasis'];
+                const varLabels = {
+                    'q1_height': 'Height (inches)', 'q2_gender': 'Gender', 'q3_study_hours': 'Study Hours',
+                    'q4_screen_time': 'Screen Time (min)', 'q5_exercise_hours': 'Exercise (hrs)',
+                    'q6_happiness': 'Happiness', 'q7_pets': 'Pets', 'q8_phone_minutes': 'Phone (min)',
+                    'q9_born_us': 'Born in US', 'q10_movie': 'Movie Theater', 'q11_stuffed_animals': 'Stuffed Animals',
+                    'q12_other_institution': 'Other Institution', 'q13_year': 'Year', 'q14_random_number': 'Random Number',
+                    'q15_value': 'Grade vs. Skills', 'q16_ai_excite': 'AI Excitement', 'q17_ai_trust': 'AI Trust',
+                    'q19_emphasis': 'Course Emphasis'
+                };
+
+                let cards = '';
+
+                numericVars.forEach(v => {
+                    const vals = getNumericValues(v);
+                    if (vals.length === 0) return;
+                    cards += `<div class="chart-card">${histogramSVG(vals, varLabels[v] || v)}</div>`;
+                });
+
+                categoricalVars.forEach(v => {
+                    const vals = getCategoricalValues(v);
+                    if (vals.length === 0) return;
+                    const counts = {};
+                    vals.forEach(x => { counts[x] = (counts[x] || 0) + 1; });
+                    const labels = Object.keys(counts);
+                    const values = labels.map(l => counts[l]);
+                    cards += `<div class="chart-card">${barSVG(labels, values, varLabels[v] || v)}</div>`;
+                });
+
+                multiSelectVars.forEach(v => {
+                    const raw = getCategoricalValues(v);
+                    const counts = {};
+                    raw.forEach(entry => {
+                        entry.split(';').map(s => s.trim()).filter(s => s && s !== '(none selected)').forEach(opt => {
+                            counts[opt] = (counts[opt] || 0) + 1;
+                        });
+                    });
+                    const labels = Object.keys(counts);
+                    if (labels.length === 0) return;
+                    const values = labels.map(l => counts[l]);
+                    cards += `<div class="chart-card">${barSVG(labels, values, varLabels[v] || v)}</div>`;
+                });
+
+                if (!cards) return '';
+                return `<div class="charts-section"><h4>📊 Variable Distributions <span style="font-weight:400;font-size:0.8rem;color:#5e5a52;">(all courses combined)</span></h4><div class="charts-grid">${cards}</div></div>`;
             }
 
             // ==================== POPULATE ANALYSIS DROPDOWNS ====================
@@ -1758,22 +1900,22 @@
             function tDistCDF(x, df) {
                 if (x < 0) return 1 - tDistCDF(-x, df);
                 const a = df / 2;
-                const z = x * x / (df + x * x);
+                const z = df / (df + x * x);
                 return 1 - 0.5 * incompleteBeta(z, a, 0.5);
             }
 
             function normalCDF(x) {
-                const a1 = 0.254829592,
-                    a2 = -0.284496736,
-                    a3 = 1.421413741,
-                    a4 = -1.453152027,
-                    a5 = 1.061405429,
-                    p = 0.3275911;
+                return 0.5 * (1 + erf(x / Math.SQRT2));
+            }
+
+            function erf(x) {
+                const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741,
+                      a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
                 const sign = x < 0 ? -1 : 1;
                 x = Math.abs(x);
                 const t = 1 / (1 + p * x);
-                const y = 1 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x / 2);
-                return 0.5 * (1 + sign * (y - 0.5));
+                const y = 1 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+                return sign * y;
             }
 
             function incompleteBeta(z, a, b) {
@@ -1822,43 +1964,65 @@
             }
 
             function lgamma(x) {
-                if (x < 0) return 0;
-                if (x < 1) x += 1;
-                return (x - 0.5) * Math.log(x) - x + 0.5 * Math.log(2 * Math.PI) + 1 / (12 * x) - 1 / (360 * x * x * x);
+                const g = 7;
+                const c = [
+                    0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+                    771.32342877765313, -176.61502916214059, 12.507343278686905,
+                    -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7
+                ];
+                if (x < 0.5) {
+                    return Math.log(Math.PI / Math.sin(Math.PI * x)) - lgamma(1 - x);
+                }
+                x -= 1;
+                let a = c[0];
+                const t = x + g + 0.5;
+                for (let i = 1; i < g + 2; i++) a += c[i] / (x + i);
+                return 0.5 * Math.log(2 * Math.PI) + (x + 0.5) * Math.log(t) - t + Math.log(a);
             }
 
             function chiSquareCDF(x, df) {
                 if (x < 0) return 0;
-                return 1 - incompleteGamma(df / 2, x / 2);
+                return lowerIncompleteGammaRegularized(df / 2, x / 2);
             }
 
-            function incompleteGamma(a, x) {
+            function lowerIncompleteGammaRegularized(a, x) {
                 if (x < 0 || a <= 0) return 0;
-                if (x === 0) return 1;
+                if (x === 0) return 0;
                 if (x < a + 1) {
-                    let sum = 1 / a,
-                        term = sum;
-                    for (let n = 1; n <= 100; n++) {
-                        term *= x / (a + n);
-                        sum += term;
-                        if (term < 1e-10) break;
+                    let ap = a, sum = 1 / a, del = sum;
+                    for (let n = 1; n <= 200; n++) {
+                        ap += 1;
+                        del *= x / ap;
+                        sum += del;
+                        if (Math.abs(del) < Math.abs(sum) * 1e-12) break;
                     }
-                    return 1 - Math.exp(-x + a * Math.log(x) - lgamma(a)) * sum;
+                    return sum * Math.exp(-x + a * Math.log(x) - lgamma(a));
                 } else {
-                    let sum = 1 / x,
-                        term = sum;
-                    for (let n = 1; n <= 100; n++) {
-                        term *= (a + n - 1) / x;
-                        sum += term;
-                        if (term < 1e-10) break;
+                    let b = x + 1 - a, c = 1e300, d = 1 / b, h = d;
+                    for (let i = 1; i <= 200; i++) {
+                        const an = -i * (i - a);
+                        b += 2;
+                        d = an * d + b; if (Math.abs(d) < 1e-300) d = 1e-300;
+                        c = b + an / c; if (Math.abs(c) < 1e-300) c = 1e-300;
+                        d = 1 / d;
+                        const del = d * c;
+                        h *= del;
+                        if (Math.abs(del - 1) < 1e-12) break;
                     }
-                    return Math.exp(-x + a * Math.log(x) - lgamma(a)) * sum;
+                    return 1 - Math.exp(-x + a * Math.log(x) - lgamma(a)) * h;
                 }
             }
 
+            function incompleteGamma(a, x) {
+                // Kept for compatibility with any external caller; delegates to the
+                // verified regularized-gamma implementation above.
+                return 1 - lowerIncompleteGammaRegularized(a, x);
+            }
+
             function fCDF(F, df1, df2) {
+                if (F <= 0) return 0;
                 const x = (df1 * F) / (df1 * F + df2);
-                return 1 - incompleteBeta(x, df1 / 2, df2 / 2);
+                return incompleteBeta(x, df1 / 2, df2 / 2);
             }
 
             // ==================== TEST FUNCTIONS ====================
