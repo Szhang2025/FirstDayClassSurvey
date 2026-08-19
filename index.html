@@ -1162,10 +1162,11 @@
             </div>
 
             <div class="action-bar-with-download">
-                <button type="button" class="btn btn-teal" id="viewDataBtn">📋 View Raw Data</button>
                 <button type="button" class="btn btn-success" id="downloadCsvBtn">📥 Download Data (CSV)</button>
+                <button type="button" class="btn btn-teal" id="viewDataBtn">📋 View Raw Data</button>
                 <button type="button" class="btn btn-purple" id="analyzeBtn">📊 Analyze Data</button>
                 <button type="button" class="btn btn-secondary" id="refreshResultsBtn">🔄 Refresh Results</button>
+                <button type="button" class="btn btn-primary" id="downloadReportBtn">📄 Download Report</button>
             </div>
 
             <div class="footnote" style="margin-top:1rem;">Data from Google Sheets · Auto-updated</div>
@@ -1349,6 +1350,7 @@
             const submitBtn = document.getElementById('submitBtn');
             const showResultsBtn = document.getElementById('showResultsBtn');
             const downloadBtn = document.getElementById('downloadCsvBtn');
+            const downloadReportBtn = document.getElementById('downloadReportBtn');
             const refreshBtn = document.getElementById('refreshResultsBtn');
             const analyzeBtn = document.getElementById('analyzeBtn');
             const viewDataBtn = document.getElementById('viewDataBtn');
@@ -3153,10 +3155,106 @@
                 }
             }
 
+            // ==================== DOWNLOAD REPORT ====================
+            const ANALYSIS_SECTIONS = [
+                { id: 'scatterResult', title: '📈 Scatterplot', placeholder: 'Select variables and click Generate.' },
+                { id: 'regResult', title: '📉 Multiple Regression', placeholder: 'Select variables and click Run Regression.' },
+                { id: 'ttestResult', title: '🧪 t-Test', placeholder: 'Select variables and click Run t-Test.' },
+                { id: 'ztestResult', title: '📊 Z-Test for Proportion', placeholder: 'Select variables and click Run Z-Test.' },
+                { id: 'chisqResult', title: '📋 Chi-Square Test', placeholder: 'Select variables and click Run Chi-Square.' },
+                { id: 'anovaResult', title: '📊 One-Way ANOVA', placeholder: 'Select variables and click Run ANOVA.' }
+            ];
+
+            function collectAnalysisResults() {
+                const results = [];
+                ANALYSIS_SECTIONS.forEach(s => {
+                    const el = document.getElementById(s.id);
+                    if (!el) return;
+                    const text = el.textContent.trim();
+                    if (!text || text === s.placeholder) return;
+                    results.push({ title: s.title, html: el.innerHTML });
+                });
+                return results;
+            }
+
+            function generateReport() {
+                if (rawDataArray.length === 0) {
+                    showToast('Load results first (click "View Survey Results").', true);
+                    return;
+                }
+
+                const analyses = collectAnalysisResults();
+                const summaryHTML = resultsContent.innerHTML;
+                const generatedAt = new Date().toLocaleString();
+                const totalResponses = (latestData && latestData.totalResponses) || rawDataArray.length || 0;
+
+                let analysesHTML;
+                if (analyses.length > 0) {
+                    analysesHTML = `<h2>Statistical Analyses</h2>` + analyses.map(a => `
+                        <div class="report-analysis-block">
+                          <h3>${a.title}</h3>
+                          <div class="analysis-result">${a.html}</div>
+                        </div>`).join('');
+                } else {
+                    analysesHTML = `<h2>Statistical Analyses</h2><p style="color:#5e5a52;font-style:italic;">No statistical tests were run in this session — open "Analyze Data" to run t-tests, ANOVA, regression, etc. before downloading the report.</p>`;
+                }
+
+                const reportHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>First Day Survey Report — ${generatedAt}</title>
+<style>
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 920px; margin: 2rem auto; padding: 0 1.5rem 3rem; color: #1e1e1e; background:#fff; line-height:1.5; }
+  h1 { border-bottom: 3px solid #8b1e2b; padding-bottom: 0.8rem; }
+  h2 { margin-top: 2.4rem; color: #8b1e2b; border-bottom: 1px solid #e8e4dc; padding-bottom: 0.4rem; }
+  h3 { margin-top: 1.4rem; font-size: 1.05rem; }
+  .meta { color: #5e5a52; font-size: 0.9rem; margin-bottom: 1.5rem; }
+  .print-btn { background:#8b1e2b; color:#fff; border:none; padding:0.6rem 1.4rem; border-radius:30px; font-size:0.9rem; cursor:pointer; margin-bottom:1.5rem; }
+  .results-table-wrapper { overflow-x: auto; }
+  .results-table { width:100%; border-collapse: collapse; font-size: 0.82rem; }
+  .results-table th, .results-table td { border: 1px solid #e8e4dc; padding: 0.4rem 0.5rem; text-align:center; }
+  .results-table thead { background:#8b1e2b; color:white; }
+  .results-table .class-cell { background:#f5f3ee; font-weight:600; }
+  .charts-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:1rem; margin-top:1rem; }
+  .chart-card { border:1px solid #e8e4dc; border-radius:12px; padding:0.5rem; }
+  .free-responses-list { list-style:none; padding:0; }
+  .free-responses-list li { background:#faf8f4; border:1px solid #e8e4dc; border-radius:10px; padding:0.5rem 0.8rem; margin-bottom:0.4rem; position:static; }
+  .free-responses-list li::before { content:none; }
+  .free-responses-list .class-group-header { background:none; border:none; font-weight:600; margin-top:1rem; }
+  .analysis-result { background:#faf8f4; border:1px solid #e8e4dc; border-radius:12px; padding:1rem; white-space: pre-wrap; word-break: break-word; font-family: 'Courier New', monospace; font-size:0.83rem; line-height:1.6; }
+  .analysis-result svg { display:block; margin:0.5rem auto; background:#fff; border-radius:8px; border:1px solid #e8e4dc; max-width:100%; height:auto; }
+  .report-analysis-block { margin-bottom: 1.6rem; }
+  @media print { .print-btn { display:none; } body { margin: 0.5rem; } }
+</style>
+</head>
+<body>
+  <h1>📊 First Day · STATs Survey Report</h1>
+  <p class="meta">Generated ${generatedAt} · ${totalResponses} total responses</p>
+  <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+  <h2>Survey Results Summary</h2>
+  ${summaryHTML}
+  ${analysesHTML}
+</body>
+</html>`;
+
+                const blob = new Blob([reportHTML], { type: 'text/html;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `survey_report_${new Date().toISOString().slice(0,10)}.html`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('Report downloaded!');
+            }
+
             // ==================== EVENT BINDING ====================
             showResultsBtn.addEventListener('click', fetchResults);
             refreshBtn.addEventListener('click', fetchResults);
             downloadBtn.addEventListener('click', downloadCSV);
+            downloadReportBtn.addEventListener('click', generateReport);
             analyzeBtn.addEventListener('click', openModal);
             viewDataBtn.addEventListener('click', openDataViewer);
             modalClose.addEventListener('click', closeModal);
