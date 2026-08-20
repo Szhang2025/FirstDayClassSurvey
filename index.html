@@ -965,6 +965,8 @@
     <div class="survey-card">
         <div class="header">
             <h1>📊 First Day · STATs Survey</h1>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://szhang2025.github.io/FirstDayClassSurvey/"
+                 alt="QR code linking to this survey" style="float:right; margin-top:-3.5rem;" />
         </div>
 
         <div class="intro">
@@ -1150,6 +1152,13 @@
         <div id="resultsPanel" class="results-panel">
             <h3>Class Survey Results <span class="badge-icon">Live</span></h3>
 
+            <div class="variable-selector" style="margin: -0.4rem 0 1.1rem;">
+                <label>Filter by course:</label>
+                <select id="resultsClassFilter">
+                    <option value="">All Courses</option>
+                </select>
+            </div>
+
             <div id="resultsContent">
                 <div class="result-empty">Click "View Survey Results" to load data.</div>
             </div>
@@ -1166,7 +1175,6 @@
                 <button type="button" class="btn btn-teal" id="viewDataBtn">📋 View Raw Data</button>
                 <button type="button" class="btn btn-purple" id="analyzeBtn">📊 Analyze Data</button>
                 <button type="button" class="btn btn-secondary" id="refreshResultsBtn">🔄 Refresh Results</button>
-                <button type="button" class="btn btn-primary" id="downloadReportBtn">📄 Download Report</button>
             </div>
 
             <div class="footnote" style="margin-top:1rem;">Data from Google Sheets · Auto-updated</div>
@@ -1211,6 +1219,13 @@
             <button class="modal-close" id="modalCloseBtn">&times;</button>
             <h2>📊 Data Analysis</h2>
             <p class="subtitle">Perform statistical tests and visualizations on the survey data.</p>
+
+            <div class="variable-selector" style="margin-bottom:1.5rem; padding-bottom:1.2rem; border-bottom:2px solid #e8e4dc;">
+                <label>Filter by course:</label>
+                <select id="analysisClassFilter"></select>
+                <span id="analysisFilterCount" style="font-size:0.82rem;color:#5e5a52;"></span>
+                <button type="button" class="btn btn-primary" id="downloadReportBtn" style="margin-left:auto;">📄 Download Report</button>
+            </div>
 
             <!-- Scatterplot -->
             <div class="analysis-section">
@@ -1375,6 +1390,7 @@
 
             let latestData = null;
             let rawDataArray = [];
+            let resultsClassFilter = ''; // '' = all courses, for the View Survey Results panel
             let filteredData = [];
             let currentPage = 1;
             let rowsPerPage = 25;
@@ -1491,6 +1507,7 @@
                     latestData = data;
                     rawDataArray = data.rawData || [];
 
+                    populateResultsClassFilterDropdown(data);
                     renderResults(data);
                     resultsPanel.classList.add('visible');
                     stanfordContext.style.display = 'block';
@@ -1507,6 +1524,15 @@
             }
 
             // ==================== RENDER RESULTS ====================
+            function populateResultsClassFilterDropdown(data) {
+                const sel = document.getElementById('resultsClassFilter');
+                if (!sel || !data || !data.tableData) return;
+                const courses = [...new Set(data.tableData.map(row => row.class || 'Unspecified'))].sort();
+                sel.innerHTML = '<option value="">All Courses</option>' +
+                    courses.map(c => `<option value="${c}">${c}</option>`).join('');
+                sel.value = resultsClassFilter;
+            }
+
             function renderResults(data) {
                 if (!data || data.error) {
                     resultsContent.innerHTML = `<div class="result-empty">${data?.error || 'No data available.'}</div>`;
@@ -1515,6 +1541,16 @@
                 if (!data.tableData || data.tableData.length === 0) {
                     resultsContent.innerHTML =
                         `<div class="result-empty">No survey responses yet. Submit a survey to see results.</div>`;
+                    return;
+                }
+
+                const filteredTableData = resultsClassFilter
+                    ? data.tableData.filter(row => (row.class || 'Unspecified') === resultsClassFilter)
+                    : data.tableData;
+
+                if (filteredTableData.length === 0) {
+                    resultsContent.innerHTML =
+                        `<div class="result-empty">No responses yet for "${resultsClassFilter}".</div>`;
                     return;
                 }
 
@@ -1549,7 +1585,7 @@
                 });
                 html += '<th>Total</th></tr></thead><tbody>';
 
-                data.tableData.forEach(row => {
+                filteredTableData.forEach(row => {
                     html += `<tr><td class="class-cell">${row.class || 'Unspecified'}</td>`;
                     orderedQuestions.forEach(qId => {
                         const qData = row[qId];
@@ -1598,8 +1634,12 @@
                 html += '</tbody></table></div>';
 
                 if (data.freeResponses && data.freeResponses.length > 0) {
+                    const filteredFreeResponses = resultsClassFilter
+                        ? data.freeResponses.filter(item => (item.class || 'Unspecified') === resultsClassFilter)
+                        : data.freeResponses;
+                    if (filteredFreeResponses.length > 0) {
                     const groupedResponses = {};
-                    data.freeResponses.forEach(item => {
+                    filteredFreeResponses.forEach(item => {
                         const className = item.class || 'Unspecified';
                         if (!groupedResponses[className]) groupedResponses[className] = [];
                         groupedResponses[className].push(item.response);
@@ -1616,9 +1656,13 @@
                         });
                     });
                     html += `</ul></div>`;
+                    }
                 }
+                const filteredTotal = resultsClassFilter
+                    ? filteredTableData.reduce((sum, row) => sum + (row.total || 0), 0)
+                    : (data.totalResponses || 0);
                 html +=
-                    `<div style="margin-top: 1rem; font-size: 0.9rem; color: #5e5a52;"><strong>Total Responses:</strong> ${data.totalResponses || 0}</div>`;
+                    `<div style="margin-top: 1rem; font-size: 0.9rem; color: #5e5a52;"><strong>Total Responses:</strong> ${filteredTotal}${resultsClassFilter ? ' (filtered to ' + resultsClassFilter + ')' : ''}</div>`;
                 html += renderVariableChartsHTML();
                 resultsContent.innerHTML = html;
 
@@ -1643,7 +1687,7 @@
                 const barW = Math.max(slot - 10, 4);
                 let svg = `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">`;
                 svg += `<rect width="${width}" height="${height}" fill="white"/>`;
-                svg += `<text x="${width/2}" y="20" text-anchor="middle" font-size="12" font-weight="600" fill="#1e1e1e">${escapeXML(title)}</text>`;
+                svg += `<text x="${width/2}" y="22" text-anchor="middle" font-size="17" font-weight="700" fill="#1e1e1e">${escapeXML(title)}</text>`;
                 svg += `<line x1="${padding.left}" y1="${padding.top+chartH}" x2="${width-padding.right}" y2="${padding.top+chartH}" stroke="#ccc" stroke-width="1"/>`;
                 values.forEach((v, i) => {
                     const barH = maxV > 0 ? (v / maxV) * chartH : 0;
@@ -1684,10 +1728,11 @@
             }
 
             function renderVariableChartsHTML() {
-                if (rawDataArray.length === 0) return '';
+                const rows = resultsClassFilter ? rawDataArray.filter(r => r.class === resultsClassFilter) : rawDataArray;
+                if (rows.length === 0) return '';
 
-                // 'class' is intentionally excluded — these charts pool every
-                // response together regardless of course.
+                // 'class' itself is excluded from the variable list — these charts
+                // respect the course filter above but don't chart "course" as a variable.
                 const numericVars = ['q1_height', 'q3_study_hours', 'q4_screen_time', 'q5_exercise_hours',
                     'q7_pets', 'q8_phone_minutes', 'q11_stuffed_animals', 'q14_random_number'
                 ];
@@ -1705,16 +1750,20 @@
                     'q19_emphasis': 'Course Emphasis'
                 };
 
+                const colValues = (v) => rows.map(r => r[v]).filter(x => x !== undefined && x !== null && x !== '');
+                const colNumeric = (v) => colValues(v).map(x => parseFloat(x)).filter(x => !isNaN(x));
+                const colCategorical = (v) => colValues(v).map(x => x.toString().trim());
+
                 let cards = '';
 
                 numericVars.forEach(v => {
-                    const vals = getNumericValues(v);
+                    const vals = colNumeric(v);
                     if (vals.length === 0) return;
                     cards += `<div class="chart-card">${histogramSVG(vals, varLabels[v] || v)}</div>`;
                 });
 
                 categoricalVars.forEach(v => {
-                    const vals = getCategoricalValues(v);
+                    const vals = colCategorical(v);
                     if (vals.length === 0) return;
                     const counts = {};
                     vals.forEach(x => { counts[x] = (counts[x] || 0) + 1; });
@@ -1724,7 +1773,7 @@
                 });
 
                 multiSelectVars.forEach(v => {
-                    const raw = getCategoricalValues(v);
+                    const raw = colCategorical(v);
                     const counts = {};
                     raw.forEach(entry => {
                         entry.split(';').map(s => s.trim()).filter(s => s && s !== '(none selected)').forEach(opt => {
@@ -1738,7 +1787,7 @@
                 });
 
                 if (!cards) return '';
-                return `<div class="charts-section"><h4>📊 Variable Distributions <span style="font-weight:400;font-size:0.8rem;color:#5e5a52;">(all courses combined)</span></h4><div class="charts-grid">${cards}</div></div>`;
+                return `<div class="charts-section"><h4>📊 Variable Distributions <span style="font-weight:400;font-size:0.8rem;color:#5e5a52;">(${resultsClassFilter || 'all courses combined'})</span></h4><div class="charts-grid">${cards}</div></div>`;
             }
 
             // ==================== POPULATE ANALYSIS DROPDOWNS ====================
@@ -1854,9 +1903,43 @@
                 container.innerHTML = html || '<span style="color:#5e5a52;font-size:0.8rem;">No other predictors available.</span>';
             }
 
+            // ==================== CLASS FILTER (for Analyze Data) ====================
+            let analysisClassFilter = ''; // '' = all courses
+
+            function getFilteredRows() {
+                return analysisClassFilter ? rawDataArray.filter(r => r.class === analysisClassFilter) : rawDataArray;
+            }
+
+            function filterLabel() {
+                return analysisClassFilter || 'All Courses';
+            }
+
+            function populateClassFilterDropdown() {
+                const sel = document.getElementById('analysisClassFilter');
+                if (!sel) return;
+                const courses = [...new Set(rawDataArray.map(r => r.class).filter(Boolean))].sort();
+                sel.innerHTML = '<option value="">All Courses</option>' +
+                    courses.map(c => `<option value="${c}">${c}</option>`).join('');
+                sel.value = analysisClassFilter;
+                updateFilterCount();
+            }
+
+            function updateFilterCount() {
+                const el = document.getElementById('analysisFilterCount');
+                if (!el) return;
+                el.textContent = `Analyzing ${getFilteredRows().length} of ${rawDataArray.length} total responses`;
+            }
+
+            function resetAnalysisResultsToPlaceholders() {
+                ANALYSIS_SECTIONS.forEach(s => {
+                    const el = document.getElementById(s.id);
+                    if (el) el.textContent = s.placeholder;
+                });
+            }
+
             // ==================== DATA HELPERS ====================
             function getColumnValues(colName) {
-                return rawDataArray.map(row => row[colName]).filter(v => v !== undefined && v !== null && v !== '');
+                return getFilteredRows().map(row => row[colName]).filter(v => v !== undefined && v !== null && v !== '');
             }
 
             function getNumericValues(colName) {
@@ -1869,7 +1952,7 @@
 
             // ==================== LISTWISE DELETION ====================
             function getAlignedData(columns) {
-                const completeRows = rawDataArray.filter(row => {
+                const completeRows = getFilteredRows().filter(row => {
                     return columns.every(col => {
                         const val = row[col];
                         return val !== undefined && val !== null && val !== '';
@@ -2246,9 +2329,9 @@
                 svg += `<line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height-padding}" stroke="#333" stroke-width="1.5"/>`;
 
                 const xMid = padding + (width - 2 * padding) / 2;
-                const yMid = height - padding / 2;
-                svg += `<text x="${xMid}" y="${height-5}" text-anchor="middle" font-size="11" fill="#333">${xLabel}</text>`;
-                svg += `<text x="10" y="${yMid}" text-anchor="middle" font-size="11" fill="#333" transform="rotate(-90,10,${yMid})">${yLabel}</text>`;
+                const yMid = height / 2; // vertical center of the plot area, not the bottom margin
+                svg += `<text x="${xMid}" y="${height-5}" text-anchor="middle" font-size="14" font-weight="600" fill="#1e1e1e">${xLabel}</text>`;
+                svg += `<text x="14" y="${yMid}" text-anchor="middle" font-size="14" font-weight="600" fill="#1e1e1e" transform="rotate(-90,14,${yMid})">${yLabel}</text>`;
 
                 for (let i = 0; i <= 5; i++) {
                     const xPos = padding + (i / 5) * (width - 2 * padding);
@@ -2276,7 +2359,8 @@
                 svg += `</svg>`;
 
                 let result = svg;
-                result += `\n\nCorrelation: r = ${r.toFixed(4)}, r² = ${(r*r).toFixed(4)}`;
+                result += `\n\nCourse filter: ${filterLabel()}`;
+                result += `\nCorrelation: r = ${r.toFixed(4)}, r² = ${(r*r).toFixed(4)}`;
                 result += `\nn = ${n}`;
                 result += `\nRegression: y = ${slope.toFixed(4)}x + ${intercept.toFixed(4)}`;
                 result += `\n\nInterpretation: There is a ${Math.abs(r) < 0.3 ? 'weak' : Math.abs(r) < 0.7 ? 'moderate' : 'strong'} ${r > 0 ? 'positive' : 'negative'} correlation between ${xLabel} and ${yLabel}.`;
@@ -2399,6 +2483,7 @@
                 const fP = 1 - fCDF(fStat, xVars.length, n - xVars.length - 1);
 
                 let result = `Multiple Regression Results\n`;
+                result += `Course filter: ${filterLabel()}\n`;
                 result += `Response: ${document.getElementById('regY').options[document.getElementById('regY').selectedIndex].text}\n`;
                 result += `Predictors: ${xVars.map(v => document.getElementById('regXContainer').querySelector(`input[value="${v}"]`).nextSibling.textContent.trim()).join(', ')}\n\n`;
                 result += `Sample size (complete cases): n = ${n}\n\n`;
@@ -2453,6 +2538,7 @@
                     const altText = alt === 'two' ? '≠' : alt === 'greater' ? '>' : '<';
 
                     let result = `One-Sample t-Test\n`;
+                    result += `Course filter: ${filterLabel()}\n`;
                     result += `Variable: ${document.getElementById('ttestVar').options[document.getElementById('ttestVar').selectedIndex].text}\n`;
                     result += `H₀: μ = ${mu0}, Hₐ: μ ${altText} ${mu0}\n\n`;
                     result += `n (complete cases) = ${test.n}\n`;
@@ -2508,6 +2594,7 @@
                     const altText = alt === 'two' ? '≠' : alt === 'greater' ? '>' : '<';
 
                     let result = `Two-Sample t-Test (Independent)\n`;
+                    result += `Course filter: ${filterLabel()}\n`;
                     result += `Variable: ${document.getElementById('ttestVar').options[document.getElementById('ttestVar').selectedIndex].text}\n`;
                     result += `Groups: ${uniqueGroups[0]} (n=${test.n1}) vs ${uniqueGroups[1]} (n=${test.n2})\n`;
                     result += `H₀: μ₁ = μ₂, Hₐ: μ₁ ${altText} μ₂\n\n`;
@@ -2557,6 +2644,7 @@
                     const altText = alt === 'two' ? '≠' : alt === 'greater' ? '>' : '<';
 
                     let result = `One-Sample Z-Test for Proportion\n`;
+                    result += `Course filter: ${filterLabel()}\n`;
                     result += `Variable: ${document.getElementById('ztestVar').options[document.getElementById('ztestVar').selectedIndex].text}\n`;
                     result += `Success category: "${successVal}"\n`;
                     result += `H₀: p = ${p0}, Hₐ: p ${altText} ${p0}\n\n`;
@@ -2613,6 +2701,7 @@
                     const altText = alt === 'two' ? '≠' : alt === 'greater' ? '>' : '<';
 
                     let result = `Two-Sample Z-Test for Proportions\n`;
+                    result += `Course filter: ${filterLabel()}\n`;
                     result += `Variable: ${document.getElementById('ztestVar').options[document.getElementById('ztestVar').selectedIndex].text}\n`;
                     result += `Success category: "${successVal}"\n`;
                     result += `Groups: ${uniqueGroups[0]} vs ${uniqueGroups[1]}\n`;
@@ -2661,6 +2750,7 @@
 
                     const test = chiSquareIndependence(data1, data2);
                     let result = `Chi-Square Test of Independence\n`;
+                    result += `Course filter: ${filterLabel()}\n`;
                     result += `Variable 1: ${document.getElementById('chisqVar1').options[document.getElementById('chisqVar1').selectedIndex].text}\n`;
                     result += `Variable 2: ${document.getElementById('chisqVar2').options[document.getElementById('chisqVar2').selectedIndex].text}\n\n`;
                     result += `χ² = ${test.statistic.toFixed(4)}\n`;
@@ -2785,6 +2875,7 @@
                     const p = 1 - chiSquareCDF(chi2, df);
 
                     let result = `Chi-Square Goodness-of-Fit Test\n`;
+                    result += `Course filter: ${filterLabel()}\n`;
                     result += `Variable: ${document.getElementById('chisqVar1').options[document.getElementById('chisqVar1').selectedIndex].text}\n\n`;
                     result += `χ² = ${chi2.toFixed(4)}\n`;
                     result += `df = ${df}\n`;
@@ -2840,6 +2931,7 @@
                 const test = anovaOneWay(yData, groups);
 
                 let result = `One-Way ANOVA F-Test\n`;
+                result += `Course filter: ${filterLabel()}\n`;
                 result += `Response: ${document.getElementById('anovaY').options[document.getElementById('anovaY').selectedIndex].text}\n`;
                 result += `Factor: ${document.getElementById('anovaGroup').options[document.getElementById('anovaGroup').selectedIndex].text}\n\n`;
                 result += `F = ${test.statistic.toFixed(4)}\n`;
@@ -3075,6 +3167,7 @@
                     return;
                 }
                 populateAnalysisDropdowns();
+                populateClassFilterDropdown();
                 modal.classList.add('active');
                 document.body.style.overflow = 'hidden';
             }
@@ -3310,6 +3403,18 @@
 
             document.getElementById('regY').addEventListener('change', function() {
                 updateRegCheckboxes();
+            });
+
+            document.getElementById('analysisClassFilter').addEventListener('change', function() {
+                analysisClassFilter = this.value;
+                updateFilterCount();
+                populateAnalysisDropdowns(); // ztestVar's 2-category filter depends on the active subset
+                resetAnalysisResultsToPlaceholders(); // stale results from a different subset would be misleading
+            });
+
+            document.getElementById('resultsClassFilter').addEventListener('change', function() {
+                resultsClassFilter = this.value;
+                renderResults(latestData); // re-render from cached data, no re-fetch needed
             });
 
             // Analysis buttons
