@@ -526,6 +526,56 @@
             display: block;
         }
 
+        /* AI Free-Response Analysis */
+        .ai-analysis-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e3ded5;
+        }
+        .ai-analysis-section h4 {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #1e1e1e;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ai-analysis-box {
+            background: white;
+            border-radius: 20px;
+            padding: 1.2rem 1.4rem;
+            border: 1px solid #e8e4dc;
+            font-size: 0.92rem;
+            line-height: 1.65;
+            color: #2a2722;
+        }
+        .ai-analysis-box h5 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #8b1e2b;
+            margin: 0.9rem 0 0.3rem;
+        }
+        .ai-analysis-box h5:first-child {
+            margin-top: 0;
+        }
+        .ai-analysis-box ul {
+            margin: 0.2rem 0 0.2rem 1.2rem;
+        }
+        .ai-analysis-box li {
+            margin-bottom: 0.25rem;
+        }
+        .ai-theme-tag {
+            display: inline-block;
+            background: #f4e9df;
+            color: #8b1e2b;
+            border-radius: 30px;
+            padding: 0.15rem 0.7rem;
+            font-size: 0.78rem;
+            font-weight: 500;
+            margin: 0.15rem 0.3rem 0.15rem 0;
+        }
+
         /* Analysis Modal Styles */
         .modal-overlay {
             display: none;
@@ -1664,11 +1714,15 @@
                 html +=
                     `<div style="margin-top: 1rem; font-size: 0.9rem; color: #5e5a52;"><strong>Total Responses:</strong> ${filteredTotal}${resultsClassFilter ? ' (filtered to ' + resultsClassFilter + ')' : ''}</div>`;
                 html += renderVariableChartsHTML();
+                html += renderAIAnalysisSectionHTML();
                 resultsContent.innerHTML = html;
 
                 if (rawDataArray.length > 0) {
                     populateAnalysisDropdowns();
                 }
+
+                const aiBtn = document.getElementById('aiAnalyzeBtn');
+                if (aiBtn) aiBtn.addEventListener('click', runAIFreeResponseAnalysis);
             }
 
             // ==================== VARIABLE DISTRIBUTION CHARTS (ignores class) ====================
@@ -1788,6 +1842,94 @@
 
                 if (!cards) return '';
                 return `<div class="charts-section"><h4>📊 Variable Distributions <span style="font-weight:400;font-size:0.8rem;color:#5e5a52;">(${resultsClassFilter || 'all courses combined'})</span></h4><div class="charts-grid">${cards}</div></div>`;
+            }
+
+            // ==================== AI FREE-RESPONSE ANALYSIS (Q18, via Claude API) ====================
+            function renderAIAnalysisSectionHTML() {
+                const rows = resultsClassFilter ? rawDataArray.filter(r => r.class === resultsClassFilter) : rawDataArray;
+                const responses = rows.map(r => (r.q18_expectation || '').trim()).filter(Boolean);
+                if (responses.length === 0) return '';
+                return `<div class="ai-analysis-section">
+                    <h4>🤖 AI Theme Analysis <span style="font-weight:400;font-size:0.8rem;color:#5e5a52;">(Q18 free responses, ${resultsClassFilter || 'all courses combined'})</span></h4>
+                    <div class="variable-selector" style="margin: 0 0 0.9rem;">
+                        <button type="button" class="btn btn-purple" id="aiAnalyzeBtn" style="padding:0.5rem 1.4rem;font-size:0.88rem;">✨ Summarize with AI</button>
+                        <span style="font-size:0.8rem;color:#5e5a52;">${responses.length} response${responses.length===1?'':'s'} available</span>
+                    </div>
+                    <div class="ai-analysis-box" id="aiAnalysisBox">Click "Summarize with AI" to identify common themes, sentiment, and takeaways across the Q18 responses shown above. This calls the Claude API and may take a few seconds.</div>
+                </div>`;
+            }
+
+            async function runAIFreeResponseAnalysis() {
+                const box = document.getElementById('aiAnalysisBox');
+                const btn = document.getElementById('aiAnalyzeBtn');
+                if (!box || !btn) return;
+
+                const rows = resultsClassFilter ? rawDataArray.filter(r => r.class === resultsClassFilter) : rawDataArray;
+                const responses = rows.map(r => (r.q18_expectation || '').trim()).filter(Boolean);
+
+                if (responses.length === 0) {
+                    box.textContent = 'No free-response answers available to analyze.';
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loading-spinner"></span> Analyzing...';
+                box.innerHTML = '<span style="color:#5e5a52;font-style:italic;">Sending responses to Claude for analysis…</span>';
+
+                try {
+                    // Goes through the Apps Script backend (not api.anthropic.com directly) so the
+                    // Anthropic API key stays server-side. See the aiAnalyzeFreeResponses handler in
+                    // the paired .gs file — a public GitHub Pages page can't safely hold a raw key.
+                    // text/plain avoids a CORS preflight that Apps Script web apps don't handle.
+                    const response = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'cors',
+                        cache: 'no-cache',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({
+                            action: 'aiAnalyzeFreeResponses',
+                            course: resultsClassFilter || 'all courses combined',
+                            responses: responses
+                        })
+                    });
+
+                    if (!response.ok) throw new Error(`Backend error: ${response.status}`);
+                    const parsed = await response.json();
+                    if (parsed.error) throw new Error(parsed.error);
+
+                    let html = '';
+                    if (parsed.summary) {
+                        html += `<h5>Summary</h5><p>${escapeXML(parsed.summary)}</p>`;
+                    }
+                    if (parsed.overall_sentiment) {
+                        html += `<h5>Overall Sentiment</h5><p>${escapeXML(parsed.overall_sentiment)}</p>`;
+                    }
+                    if (Array.isArray(parsed.themes) && parsed.themes.length > 0) {
+                        html += `<h5>Common Themes</h5><div>`;
+                        parsed.themes.forEach(t => {
+                            html += `<span class="ai-theme-tag">${escapeXML(t.label)}${t.count ? ' (' + t.count + ')' : ''}</span>`;
+                        });
+                        html += `</div><ul>`;
+                        parsed.themes.forEach(t => {
+                            if (t.example_paraphrase) {
+                                html += `<li><strong>${escapeXML(t.label)}:</strong> ${escapeXML(t.example_paraphrase)}</li>`;
+                            }
+                        });
+                        html += `</ul>`;
+                    }
+                    if (Array.isArray(parsed.notable_outliers) && parsed.notable_outliers.length > 0) {
+                        html += `<h5>Notable Outliers</h5><ul>`;
+                        parsed.notable_outliers.forEach(o => { html += `<li>${escapeXML(o)}</li>`; });
+                        html += `</ul>`;
+                    }
+                    box.innerHTML = html || '<span style="color:#5e5a52;font-style:italic;">No structured analysis returned.</span>';
+                } catch (err) {
+                    console.error('AI analysis failed:', err);
+                    box.innerHTML = `<span style="color:#8b1e2b;">AI analysis failed: ${escapeXML(err.message)}. You can try again.</span>`;
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '✨ Summarize with AI';
+                }
             }
 
             // ==================== POPULATE ANALYSIS DROPDOWNS ====================
