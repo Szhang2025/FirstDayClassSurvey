@@ -1943,8 +1943,14 @@
                     'q7_pets', 'q8_phone_minutes', 'q11_stuffed_animals', 'q14_random_number'
                 ];
                 const categoricalVars = ['class', 'q2_gender', 'q6_happiness', 'q9_born_us', 'q10_movie',
-                    'q12_other_institution', 'q13_year', 'q15_value', 'q16_ai_excite', 'q17_ai_trust', 'q19_emphasis'
+                    'q12_other_institution', 'q13_year', 'q15_value', 'q16_ai_excite', 'q17_ai_trust'
                 ];
+                // q19_emphasis is a "select all that apply" multi-select field stored as a
+                // semicolon-joined string. It is intentionally left OUT of categoricalVars:
+                // treating each combination of selections as its own "category" (as the old
+                // code did by including it here) is not a valid categorical factor for
+                // t-tests/z-tests/chi-square/ANOVA, since the categories aren't mutually
+                // exclusive. It's only used for its own distribution chart elsewhere.
 
                 const varLabels = {
                     'q1_height': 'Height (inches)',
@@ -1985,17 +1991,30 @@
                     });
                 }
 
+                // A categorical variable qualifies as a "group" variable for a two-sample
+                // t-test or two-sample z-test only if it currently has EXACTLY two distinct
+                // values in the active (course-filtered) data — otherwise "two-sample"
+                // doesn't make sense. This mirrors the existing binary-only filter already
+                // used for the z-test's own outcome variable below.
+                function binaryOnly(vars) {
+                    return vars.filter(v => {
+                        const vals = getColumnValues(v);
+                        const unique = [...new Set(vals)];
+                        return unique.length === 2;
+                    });
+                }
+
                 populateSelect('scatterX', quantitativeVars);
                 populateSelect('scatterY', quantitativeVars);
                 populateSelect('regY', quantitativeVars);
                 populateSelect('ttestVar', quantitativeVars);
-                populateSelect('ttestGroup', categoricalVars);
+                populateSelect('ttestGroup', binaryOnly(categoricalVars));
                 populateSelect('ztestVar', categoricalVars.filter(v => {
                     const vals = getColumnValues(v);
                     const unique = [...new Set(vals)];
                     return unique.length === 2;
                 }));
-                populateSelect('ztestGroup', categoricalVars);
+                populateSelect('ztestGroup', binaryOnly(categoricalVars));
                 populateSelect('chisqVar1', categoricalVars);
                 populateSelect('chisqVar2', categoricalVars);
                 populateSelect('anovaY', quantitativeVars);
@@ -2014,33 +2033,63 @@
                 updateRegCheckboxes();
             }
 
+            // ==================== ID-LIKE VARIABLE DETECTION ====================
+            // Flags variables that behave like identifiers rather than meaningful
+            // predictors: (1) their name looks like an ID field (id/eid/uid/guid/...),
+            // or (2) almost every value in the current (filtered) data is unique, which
+            // means the "variable" carries no repeatable structure a regression could
+            // learn from and would just act as a near-perfect (and meaningless) fit.
+            // Applied when building the regression predictor list so a field like a
+            // student/eid ID column never gets offered as a predictor.
+            function isIdLikeVariable(varName) {
+                if (/(^|_)(id|eid|uid|guid|uuid|sid)($|_)/i.test(varName)) return true;
+                const vals = getColumnValues(varName);
+                if (vals.length < 5) return false; // not enough data to judge reliably
+                const uniqueCount = new Set(vals.map(v => String(v).trim())).size;
+                return uniqueCount / vals.length > 0.9;
+            }
+
             // ==================== REGRESSION CHECKBOXES ====================
+            // Quantitative variables are used directly as numeric predictors.
+            // Categorical variables are reference-coded into (k-1) dummy predictors
+            // at run time in runRegression(). Both pools exclude the chosen response
+            // variable and any ID-like variable (see isIdLikeVariable above).
+            const REG_QUANTITATIVE_VARS = ['q1_height', 'q3_study_hours', 'q4_screen_time', 'q5_exercise_hours',
+                'q7_pets', 'q8_phone_minutes', 'q11_stuffed_animals', 'q14_random_number'
+            ];
+            const REG_CATEGORICAL_VARS = ['class', 'q2_gender', 'q6_happiness', 'q9_born_us', 'q10_movie',
+                'q12_other_institution', 'q13_year', 'q15_value', 'q16_ai_excite', 'q17_ai_trust'
+            ];
+            // q19_emphasis (multi-select) is excluded from regression predictors for the
+            // same reason it's excluded from categoricalVars above.
+
+            const REG_VAR_LABELS = {
+                'q1_height': 'Height (inches)', 'q2_gender': 'Gender', 'q3_study_hours': 'Study Hours',
+                'q4_screen_time': 'Screen Time', 'q5_exercise_hours': 'Exercise Hours', 'q6_happiness': 'Happiness',
+                'q7_pets': 'Pets', 'q8_phone_minutes': 'Phone Minutes', 'q9_born_us': 'Born in US',
+                'q10_movie': 'Movie Theater', 'q11_stuffed_animals': 'Stuffed Animals',
+                'q12_other_institution': 'Other Institution', 'q13_year': 'Year', 'q14_random_number': 'Random Number',
+                'q15_value': 'Grade vs. Skills', 'q16_ai_excite': 'AI Excitement', 'q17_ai_trust': 'AI Trust',
+                'class': 'Course'
+            };
+
             function updateRegCheckboxes() {
                 const container = document.getElementById('regXContainer');
                 const regY = document.getElementById('regY').value;
 
                 if (!container) return;
 
-                const quantitativeVars = ['q1_height', 'q3_study_hours', 'q4_screen_time', 'q5_exercise_hours',
-                    'q7_pets', 'q8_phone_minutes', 'q11_stuffed_animals', 'q14_random_number'
-                ];
-
-                const varLabels = {
-                    'q1_height': 'Height (inches)',
-                    'q3_study_hours': 'Study Hours',
-                    'q4_screen_time': 'Screen Time',
-                    'q5_exercise_hours': 'Exercise Hours',
-                    'q7_pets': 'Pets',
-                    'q8_phone_minutes': 'Phone Minutes',
-                    'q11_stuffed_animals': 'Stuffed Animals',
-                    'q14_random_number': 'Random Number'
-                };
+                const candidates = [
+                    ...REG_QUANTITATIVE_VARS.map(v => ({ v, categorical: false })),
+                    ...REG_CATEGORICAL_VARS.map(v => ({ v, categorical: true }))
+                ].filter(({ v }) => v !== regY && !isIdLikeVariable(v));
 
                 let html = '';
-                quantitativeVars.forEach(v => {
-                    if (v === regY) return;
+                candidates.forEach(({ v, categorical }) => {
                     const checked = document.querySelector(`#regXContainer input[value="${v}"]`)?.checked ? 'checked' : '';
-                    html += `<label><input type="checkbox" value="${v}" ${checked} /> ${varLabels[v] || v}</label>`;
+                    const label = REG_VAR_LABELS[v] || v;
+                    const tag = categorical ? ' <span style="color:#8b1e2b;font-size:0.7rem;">(categorical)</span>' : '';
+                    html += `<label><input type="checkbox" value="${v}" data-categorical="${categorical}" ${checked} /> ${label}${tag}</label>`;
                 });
                 container.innerHTML = html || '<span style="color:#5e5a52;font-size:0.8rem;">No other predictors available.</span>';
             }
@@ -2545,6 +2594,13 @@
                 const yVar = document.getElementById('regY').value;
                 const checkboxes = document.querySelectorAll('#regXContainer input[type="checkbox"]:checked');
                 const xVars = Array.from(checkboxes).map(cb => cb.value);
+                // Remember which of the checked predictors are categorical (need dummy coding)
+                // vs quantitative (used directly), per the data-categorical attribute set in
+                // updateRegCheckboxes().
+                const xVarIsCategorical = {};
+                Array.from(checkboxes).forEach(cb => {
+                    xVarIsCategorical[cb.value] = cb.dataset.categorical === 'true';
+                });
                 const resultDiv = document.getElementById('regResult');
 
                 if (!yVar || xVars.length === 0) {
@@ -2562,14 +2618,38 @@
                 }
 
                 const yData = aligned[yVar];
-                const xData = xVars.map(v => aligned[v]);
+
+                // Build design-matrix columns: quantitative predictors pass through as a
+                // single numeric column; categorical predictors are reference-coded into
+                // (k-1) 0/1 dummy columns (first category, alphabetically, is the reference).
+                const designColumns = []; // { label, values: number[] }
+                xVars.forEach(v => {
+                    const colValues = aligned[v];
+                    if (!xVarIsCategorical[v]) {
+                        designColumns.push({ label: REG_VAR_LABELS[v] || v, values: colValues.map(Number) });
+                        return;
+                    }
+                    const strValues = colValues.map(x => String(x).trim());
+                    const categories = [...new Set(strValues)].sort();
+                    if (categories.length < 2) return; // constant column after filtering — contributes nothing
+                    const reference = categories[0];
+                    categories.slice(1).forEach(cat => {
+                        designColumns.push({
+                            label: `${REG_VAR_LABELS[v] || v}: ${cat} (vs. ${reference})`,
+                            values: strValues.map(x => x === cat ? 1 : 0)
+                        });
+                    });
+                });
+
+                if (designColumns.length === 0) {
+                    resultDiv.textContent = 'Selected predictors have no usable variation in the current data (each is constant after filtering).';
+                    return;
+                }
 
                 const X = [];
                 for (let i = 0; i < n; i++) {
                     const row = [1];
-                    xVars.forEach((v, idx) => {
-                        row.push(xData[idx][i]);
-                    });
+                    designColumns.forEach(col => row.push(col.values[i]));
                     X.push(row);
                 }
 
@@ -2611,31 +2691,30 @@
                 }
 
                 const coeffs = solveLinear(xtx, xty);
+                const numPredictors = designColumns.length;
 
                 const yMean = mean(yData);
                 const ssTot = yData.reduce((s, v) => s + Math.pow(v - yMean, 2), 0);
                 const yPred = X.map(row => row.reduce((sum, v, i) => sum + v * coeffs[i], 0));
                 const ssRes = yData.reduce((s, v, i) => s + Math.pow(v - yPred[i], 2), 0);
                 const r2 = 1 - ssRes / ssTot;
-                const adjR2 = 1 - (1 - r2) * (n - 1) / (n - xVars.length - 1);
+                const adjR2 = 1 - (1 - r2) * (n - 1) / (n - numPredictors - 1);
 
-                const msRes = ssRes / (n - xVars.length - 1);
-                const msReg = (ssTot - ssRes) / xVars.length;
+                const msRes = ssRes / (n - numPredictors - 1);
+                const msReg = (ssTot - ssRes) / numPredictors;
                 const fStat = msReg / msRes;
-                const fP = 1 - fCDF(fStat, xVars.length, n - xVars.length - 1);
+                const fP = 1 - fCDF(fStat, numPredictors, n - numPredictors - 1);
 
                 let result = `Multiple Regression Results\n`;
                 result += `Course filter: ${filterLabel()}\n`;
-                result += `Response: ${document.getElementById('regY').options[document.getElementById('regY').selectedIndex].text}\n`;
-                result += `Predictors: ${xVars.map(v => document.getElementById('regXContainer').querySelector(`input[value="${v}"]`).nextSibling.textContent.trim()).join(', ')}\n\n`;
+                result += `Response: ${REG_VAR_LABELS[yVar] || yVar}\n`;
+                result += `Predictors: ${designColumns.map(c => c.label).join(', ')}\n\n`;
                 result += `Sample size (complete cases): n = ${n}\n\n`;
 
                 result += `Coefficients:\n`;
                 result += `  Intercept: ${coeffs[0].toFixed(4)}\n`;
-                xVars.forEach((v, idx) => {
-                    const label = document.getElementById('regXContainer').querySelector(`input[value="${v}"]`)
-                        .nextSibling.textContent.trim();
-                    result += `  ${label}: ${coeffs[idx+1].toFixed(4)}\n`;
+                designColumns.forEach((col, idx) => {
+                    result += `  ${col.label}: ${coeffs[idx+1].toFixed(4)}\n`;
                 });
 
                 result += `\nModel Summary:\n`;
@@ -2645,7 +2724,7 @@
                 result += `Interpretation: `;
                 if (fP < 0.05) {
                     result += `The model is statistically significant (p < 0.05). `;
-                    result += `The predictors explain ${(r2*100).toFixed(1)}% of the variance in ${document.getElementById('regY').options[document.getElementById('regY').selectedIndex].text}.`;
+                    result += `The predictors explain ${(r2*100).toFixed(1)}% of the variance in ${REG_VAR_LABELS[yVar] || yVar}.`;
                 } else {
                     result += `The model is not statistically significant (p > 0.05). `;
                     result += `The predictors do not explain significant variance in the response variable.`;
